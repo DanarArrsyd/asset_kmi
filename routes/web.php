@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeployController;
 use App\Http\Controllers\MasterData\BrandController;
 use App\Http\Controllers\MasterData\CategoryController;
 use App\Http\Controllers\MasterData\DepartmentController;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/deploy/migrate', [DeployController::class, 'migrate'])
+    ->middleware('throttle:5,1')
+    ->name('deploy.migrate');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

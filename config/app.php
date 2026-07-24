@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Deploy Token
+    |--------------------------------------------------------------------------
+    |
+    | Set on hosts with no SSH access, to authorize POST /deploy/migrate.
+    | Generate a long random value and set it only in the server's .env —
+    | never commit it. Leave unset to disable the endpoint entirely.
+    |
+    */
+
+    'deploy_token' => env('DEPLOY_TOKEN'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
