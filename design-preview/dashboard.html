@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — STO Asset Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="shell" id="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <i class="bi bi-box-seam"></i>
+      <span class="brand-text">STO Asset</span>
+    </div>
+
+    <nav>
+      <a href="#" class="sidebar__link is-active"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+
+      <div class="sidebar__group-label">Master Data</div>
+      <a href="#" class="sidebar__link"><i class="bi bi-box"></i><span>Asset</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-tags"></i><span>Category</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-diagram-3"></i><span>Department</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-geo-alt"></i><span>Location</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-bookmark"></i><span>Brand</span></a>
+
+      <div class="sidebar__group-label">Transactions</div>
+      <a href="#" class="sidebar__link"><i class="bi bi-qr-code-scan"></i><span>Stock Opname</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-tools"></i><span>Maintenance</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-arrow-left-right"></i><span>Asset Transfer</span></a>
+
+      <div class="sidebar__group-label">&nbsp;</div>
+      <a href="#" class="sidebar__link"><i class="bi bi-bar-chart"></i><span>Reports</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-gear"></i><span>Settings</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-people"></i><span>Users</span></a>
+      <a href="#" class="sidebar__link"><i class="bi bi-person-circle"></i><span>Profile</span></a>
+    </nav>
+
+    <button class="sidebar__toggle" id="sidebarToggle" aria-label="Collapse sidebar">
+      <i class="bi bi-chevron-double-left"></i>
+    </button>
+  </aside>
+
+  <!-- Main -->
+  <div>
+    <header class="navbar">
+      <button class="navbar__icon-btn navbar__hamburger" id="mobileToggle" aria-label="Buka menu">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="navbar__title">Dashboard</div>
+
+      <label class="navbar__search">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Cari aset, kategori, lokasi...">
+      </label>
+
+      <div class="navbar__actions">
+        <button class="navbar__icon-btn" aria-label="Notifikasi">
+          <i class="bi bi-bell"></i>
+          <span class="navbar__badge"></span>
+        </button>
+        <div class="navbar__user">
+          <div class="navbar__avatar">ED</div>
+          <div class="navbar__user-meta">
+            <div class="navbar__user-name">Edana R.</div>
+            <div class="navbar__user-role">Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="breadcrumb"><span>Home</span> / <span class="is-current">Dashboard</span></div>
+
+      <div class="page-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Ringkasan aset & progres stock opname — data contoh, belum terhubung DB.</p>
+        </div>
+        <button class="btn btn--primary"><i class="bi bi-plus-lg"></i> Tambah Asset</button>
+      </div>
+
+      <!-- KPI -->
+      <section class="kpi-grid">
+        <div class="card">
+          <div class="kpi-card__label"><i class="bi bi-boxes"></i> Total Assets</div>
+          <div class="kpi-card__value">1,284</div>
+          <div class="kpi-card__delta">Seluruh departemen</div>
+        </div>
+        <div class="card kpi-card--accent">
+          <div class="kpi-card__label"><i class="bi bi-check-circle"></i> Active</div>
+          <div class="kpi-card__value">1,096</div>
+          <div class="kpi-card__delta is-up"><i class="bi bi-arrow-up-short"></i> 85% dari total</div>
+        </div>
+        <div class="card kpi-card--warning">
+          <div class="kpi-card__label"><i class="bi bi-tools"></i> Maintenance</div>
+          <div class="kpi-card__value">142</div>
+          <div class="kpi-card__delta">11% dari total</div>
+        </div>
+        <div class="card kpi-card--danger">
+          <div class="kpi-card__label"><i class="bi bi-exclamation-triangle"></i> Missing</div>
+          <div class="kpi-card__value">46</div>
+          <div class="kpi-card__delta is-down"><i class="bi bi-arrow-down-short"></i> perlu tindak lanjut</div>
+        </div>
+        <div class="card">
+          <div class="kpi-card__label"><i class="bi bi-clipboard-check"></i> STO Progress</div>
+          <div class="kpi-card__value">68%</div>
+          <div class="dist-bar" style="margin-top:.5rem"><div class="dist-bar__fill" style="width:68%"></div></div>
+        </div>
+      </section>
+
+      <!-- Distribution + Activity -->
+      <section class="grid-2col">
+        <div>
+          <div class="card" style="margin-bottom: var(--space-md)">
+            <div class="card__head">
+              <h2>Assets by Department</h2>
+              <a href="#">Lihat semua</a>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>Produksi</span><span class="count">412</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:83%"></div></div>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>Warehouse</span><span class="count">318</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:64%"></div></div>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>IT & Support</span><span class="count">201</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:41%"></div></div>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>Finance</span><span class="count">96</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:20%"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <h2>Assets by Category</h2>
+              <a href="#">Lihat semua</a>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>Machinery</span><span class="count">356</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:72%"></div></div>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>IT Equipment</span><span class="count">289</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:58%"></div></div>
+            </div>
+            <div class="dist-row">
+              <div class="dist-row__meta"><span>Furniture</span><span class="count">204</span></div>
+              <div class="dist-bar"><div class="dist-bar__fill" style="width:41%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__head">
+            <h2>Recent Activities</h2>
+            <a href="#">Lihat semua</a>
+          </div>
+          <ul class="activity-list">
+            <li class="activity-item">
+              <div class="activity-icon is-success"><i class="bi bi-qr-code-scan"></i></div>
+              <div class="activity-body">
+                <p><strong>AST000412</strong> diverifikasi STO oleh Rina (Warehouse)</p>
+                <time>12 menit lalu</time>
+              </div>
+            </li>
+            <li class="activity-item">
+              <div class="activity-icon is-warning"><i class="bi bi-tools"></i></div>
+              <div class="activity-body">
+                <p><strong>AST000188</strong> dipindah ke status Maintenance</p>
+                <time>1 jam lalu</time>
+              </div>
+            </li>
+            <li class="activity-item">
+              <div class="activity-icon"><i class="bi bi-arrow-left-right"></i></div>
+              <div class="activity-body">
+                <p><strong>AST000097</strong> transfer dari Produksi ke IT & Support</p>
+                <time>3 jam lalu</time>
+              </div>
+            </li>
+            <li class="activity-item">
+              <div class="activity-icon"><i class="bi bi-plus-circle"></i></div>
+              <div class="activity-body">
+                <p>Asset baru <strong>AST001284</strong> ditambahkan oleh Admin</p>
+                <time>Kemarin, 16:42</time>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+  const shell = document.getElementById('shell');
+  document.getElementById('sidebarToggle').addEventListener('click', () => {
+    shell.classList.toggle('is-collapsed');
+  });
+  document.getElementById('mobileToggle').addEventListener('click', () => {
+    shell.classList.toggle('is-mobile-open');
+  });
+</script>
+</body>
+</html>

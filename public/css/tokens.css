@@ -1,0 +1,72 @@
+/* Hallmark · route: custom (tuned) · genre: modern-minimal · structure: app-shell (CLAUDE.md-locked)
+ * theme: STO-Navy · anchor: oklch(34.3% 0.077 251.6) [#163A5F] · display/body: Inter (project-locked, overrides font ban-list)
+ * axes: paper-band=light / display-style=grotesk-sans / accent-hue=cool · studied: no
+ */
+
+:root {
+  /* Brand colors — exact from CLAUDE.md, converted to OKLCH */
+  --color-primary: oklch(34.3% 0.077 251.6);       /* #163A5F */
+  --color-primary-hover: oklch(40.0% 0.085 249.4);  /* #1E4A73 */
+  --color-primary-active: oklch(29.1% 0.064 250.3); /* #0F2D4A */
+
+  --color-bg: oklch(97.5% 0.005 258.3);             /* #F5F7FA */
+  --color-surface: oklch(100% 0 0);                 /* #FFFFFF */
+  --color-border: oklch(90.9% 0.017 250.9);         /* #D9E2EC */
+  --color-border-2: oklch(94% 0.010 251);           /* one step lighter, for nested dividers */
+
+  --color-text: oklch(27.8% 0.030 256.8);           /* #1F2937 */
+  --color-text-muted: oklch(55.1% 0.023 264.4);     /* #6B7280 */
+
+  --color-success: oklch(62.7% 0.170 149.2);        /* #16A34A */
+  --color-warning: oklch(76.9% 0.165 70.1);         /* #F59E0B */
+  --color-danger: oklch(57.7% 0.215 27.3);          /* #DC2626 */
+
+  --color-focus: oklch(40.0% 0.20 251.6);           /* accent hue, higher chroma, focus-only */
+  --color-accent-ink: oklch(100% 0 0);              /* text-on-primary: primary L < 50, use paper */
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-display-s: 2.25rem;
+
+  /* Spacing — 4pt scale */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Radius */
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+
+  /* Chrome */
+  --sidebar-w: 260px;
+  --sidebar-w-collapsed: 72px;
+  --navbar-h: 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}
