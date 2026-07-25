@@ -34,23 +34,44 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
-      - name: Deploy over FTP
+      - name: Zip the build (FTP upload is one file, not thousands)
+        run: |
+          zip -r -q ../deploy.zip . \
+            -x ".git/*" ".github/*" "node_modules/*" "tests/*" \
+               "design-preview/*" "deploy/*" "storage/logs/*" \
+               ".env" ".env.example"
+          mv ../deploy.zip deploy.zip
+
+      - name: Upload unpack.php (standalone, outside the zip)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}public/
+          state-name: .ftp-deploy-unpack-state.json
+
+      - name: Upload deploy.zip
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          include: |
+            deploy.zip
           exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/tests/**
-            **/.github/**
-            **/design-preview/**
-            **/storage/logs/**
-            **/.env
-            **/.env.example
+            **/*
+            !deploy.zip
+          state-name: .ftp-deploy-zip-state.json
+          dangerous-clean-slate: false
+
+      - name: Unpack on the server
+        run: |
+          curl -sf -X POST "${{ secrets.APP_URL }}/unpack.php?token=${{ secrets.DEPLOY_TOKEN }}" \
+            || { echo "Unpack call failed — check FTP_SERVER_DIR/public/unpack.php was uploaded and DEPLOY_TOKEN matches server .env"; exit 1; }
 
       - name: Run migrations (no SSH on host)
         run: |

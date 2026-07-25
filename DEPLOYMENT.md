@@ -30,8 +30,12 @@ Never put any of these values directly in code or commit them — GitHub Secrets
 
 Push to `main` → `.github/workflows/deploy.yml` runs:
 1. `composer install --no-dev` + `npm run build` on the GitHub runner (host has no SSH to do this itself)
-2. Uploads the built app over FTP to `FTP_SERVER_DIR` (excludes `.env`, `.git`, `node_modules`, `tests`, `design-preview`)
-3. Calls `POST https://yourdomain.com/deploy/migrate?token=...` — runs `migrate --force`, `storage:link`, and warms config/route/view caches
+2. Zips the whole build into one `deploy.zip` — uploading thousands of individual `vendor/` files over FTP is what caused the first attempt to time out and get disconnected by the host after an hour
+3. Uploads two small things over FTP: `deploy/unpack.php` (a standalone, framework-free unzip script, goes to `.../public/unpack.php`) and `deploy.zip` itself (goes to the app root) — both single-file uploads, seconds not minutes
+4. Calls `POST https://yourdomain.com/unpack.php?token=...` — extracts `deploy.zip` into place server-side via PHP's `ZipArchive`, then deletes the zip
+5. Calls `POST https://yourdomain.com/deploy/migrate?token=...` — runs `migrate --force`, `storage:link`, and warms config/route/view caches
+
+`unpack.php` reads `DEPLOY_TOKEN` straight out of the server's `.env` with a plain-text regex (no Laravel bootstrap available before the app is unpacked). Same token as `/deploy/migrate` — no extra secret needed.
 
 `.env` on the server is never overwritten by deploy — edit it directly via cPanel File Manager when needed (e.g. rotating `DEPLOY_TOKEN`).
 
