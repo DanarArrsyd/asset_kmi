@@ -38,7 +38,7 @@ jobs:
         run: |
           zip -r -q ../deploy.zip . \
             -x ".git/*" ".github/*" "node_modules/*" "tests/*" \
-               "design-preview/*" "deploy/*" "storage/logs/*" \
+               "design-preview/*" "deploy/*" "storage/logs/*.log" \
                ".env" ".env.example"
           mv ../deploy.zip deploy.zip
 

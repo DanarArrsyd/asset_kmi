@@ -54,6 +54,26 @@ $zip->extractTo(__DIR__.'/..');
 $zip->close();
 unlink($zipPath);
 
+// Safety net: these must exist + be writable for Laravel to boot at all.
+// A zip tool can silently drop directories that end up with no files in
+// them after exclude patterns are applied (bit us once already).
+$root = __DIR__.'/..';
+foreach ([
+    'storage/logs',
+    'storage/framework/cache/data',
+    'storage/framework/sessions',
+    'storage/framework/testing',
+    'storage/framework/views',
+    'storage/app/public',
+    'storage/app/private',
+    'bootstrap/cache',
+] as $dir) {
+    $path = "{$root}/{$dir}";
+    if (! is_dir($path)) {
+        mkdir($path, 0775, true);
+    }
+}
+
 header('Content-Type: text/plain');
 echo "Unpacked OK.\n";
 
