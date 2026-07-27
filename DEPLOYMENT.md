@@ -1,89 +1,132 @@
-# Deployment — cPanel (FTP, no SSH)
+# Deployment — Hostinger (FTP, no SSH)
 
-## 1. cPanel setup (one-time, do this first)
+Host is Hostinger/hPanel, not cPanel. There is no SSH, so nothing can be built
+or migrated on the server itself — GitHub Actions does both remotely.
 
-1. **Database** — cPanel → MySQL Databases: create a database + user, grant ALL PRIVILEGES, attach user to database. Note the DB name, username, password, host (usually `localhost`).
-2. **Document root** — cPanel → Domains → Manage (for your domain): set the document root to a `public` subfolder, e.g. `public_html/public`, **not** `public_html` itself. The rest of the Laravel app (app/, config/, storage/, vendor/…) must sit one level above the web root so it isn't directly browsable. If your plan doesn't allow a custom document root, ask host support — this step is what keeps `.env`, `app/`, etc. from being served as plain files.
-3. **PHP version** — cPanel → MultiPHP Manager: set PHP 8.3+ for the domain.
-4. **Upload `.env` manually, once** — this file is gitignored on purpose and is never touched by the deploy workflow. Use cPanel File Manager to create it in the app root (sibling of `public_html`, wherever the workflow uploads to — see `FTP_SERVER_DIR` below) with:
+## Layout
+
+Hostinger gives no way to move the subdomain's document root, so the app root
+**is** the web root:
+
+```
+/                       FTP root, not web-served, holds Hostinger's DO_NOT_UPLOAD_HERE marker
+└── public_html/        document root AND Laravel app root
+    ├── .env            never in git, never overwritten by deploy
+    ├── .htaccess       the only thing keeping .env off the public internet
+    ├── app/ vendor/ storage/ ...
+    └── public/         Laravel's front controller
+```
+
+This is weaker than keeping the app above the web root. `.htaccess` does two
+things: denies `.env`, `composer.*`, `artisan`, `*.log` and `*.zip` by filename,
+and rewrites every request into `public/` so nothing else has a reachable path.
+A `RedirectMatch` covers `app/`, `config/`, `routes/`, `vendor/` and friends for
+the case where `mod_rewrite` is unavailable and the rewrite silently stops.
+
+Because that protection is configuration rather than filesystem layout, the
+deploy workflow re-proves it on every run — see step 5 below. In July 2026 this
+exact layout leaked `.env` (`APP_KEY`, DB credentials, `DEPLOY_TOKEN`) and a full
+source zip for two days before anyone noticed.
+
+If Hostinger ever allows changing the document root, point it at
+`public_html/public` and the `.htaccess` becomes redundant. Nothing else changes.
+
+## 1. One-time server setup
+
+1. **Database** — hPanel → Databases: create database + user, grant all
+   privileges. Note name, user, password, host (`localhost`).
+2. **PHP version** — hPanel → PHP Configuration: 8.3 or newer.
+3. **Upload `.env` manually, once** — gitignored on purpose, and the deploy
+   never touches it. Put it at `public_html/.env`:
    - `APP_ENV=production`, `APP_DEBUG=false`
-   - `APP_URL=https://yourdomain.com`
-   - `APP_KEY=` — generate locally with `php artisan key:generate --show`, paste the output
-   - `DB_CONNECTION=mysql`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` from step 1
-   - `DEPLOY_TOKEN=` — a long random string (e.g. `php -r "echo bin2hex(random_bytes(32));"`). This authorizes the no-SSH migration endpoint. Keep it secret.
-5. Import the base schema once via phpMyAdmin **or** just let the first deploy's migration call create all tables (recommended — see below).
+   - `APP_URL=https://asset.kencomanufactur.co.id`
+   - `APP_KEY=` — generate locally with `php artisan key:generate --show`
+   - `DB_CONNECTION=mysql` plus `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+   - `DEPLOY_TOKEN=` — long random string, e.g. `php -r "echo bin2hex(random_bytes(32));"`
 
-## 2. GitHub repo secrets (Settings → Secrets and variables → Actions)
+`SESSION_DRIVER=file` and `CACHE_STORE=file` are the safer starting point: the
+login page then renders even if the DB credentials are wrong, which makes a bad
+deploy far easier to diagnose. Switch to `database` once things are stable.
+
+## 2. GitHub repo secrets
+
+Settings → Secrets and variables → Actions:
 
 | Secret | Value |
 |---|---|
-| `FTP_SERVER` | FTP host from cPanel (e.g. `ftp.yourdomain.com`) |
-| `FTP_USERNAME` | cPanel FTP username |
-| `FTP_PASSWORD` | cPanel FTP password |
-| `FTP_SERVER_DIR` | Remote path the app deploys to, e.g. `/home/youruser/asset_kenco/` — must match where `.env` was placed in step 1.4, and `public_html/public` document root must point inside this same app folder's `public/` |
-| `APP_URL` | `https://yourdomain.com` (used to call the migrate endpoint after deploy) |
-| `DEPLOY_TOKEN` | Same value as `.env`'s `DEPLOY_TOKEN` on the server |
+| `FTP_SERVER` | FTP host from hPanel |
+| `FTP_USERNAME` | FTP username |
+| `FTP_PASSWORD` | FTP password |
+| `FTP_SERVER_DIR` | `public_html/` — **must end with `/`** |
+| `APP_URL` | `https://asset.kencomanufactur.co.id` — no trailing slash, no `/public` |
+| `DEPLOY_TOKEN` | identical to `DEPLOY_TOKEN` in the server `.env` |
 
-Never put any of these values directly in code or commit them — GitHub Secrets only.
+`FTP_SERVER_DIR` is concatenated directly (`${FTP_SERVER_DIR}public/`), so a
+missing slash silently uploads to a folder named `public_htmlpublic/`.
 
 ## 3. How deploy works
 
-Push to `main` → `.github/workflows/deploy.yml` runs. First it calls the reusable
-`tests.yml` workflow (Pint + Pest + asset build); **if anything there is red the
-deploy job never starts**, so a broken build can't reach production. Then:
-1. `composer install --no-dev` + `npm run build` on the GitHub runner (host has no SSH to do this itself)
-2. Zips the whole build into one `deploy.zip` — uploading thousands of individual `vendor/` files over FTP is what caused the first attempt to time out and get disconnected by the host after an hour
-3. Uploads two small things over FTP: `deploy/unpack.php` (a standalone, framework-free unzip script, goes to `.../public/unpack.php`) and `deploy.zip` itself (goes to the app root) — both single-file uploads, seconds not minutes
-4. Calls `POST https://yourdomain.com/unpack.php?token=...` — extracts `deploy.zip` into place server-side via PHP's `ZipArchive`, then deletes the zip
-5. Calls `POST https://yourdomain.com/deploy/migrate?token=...` — runs `migrate --force`, `storage:link`, and warms config/route/view caches
+Push to `main` → `.github/workflows/deploy.yml`. It first calls the reusable
+`tests.yml` workflow (Pint + Pest + asset build); **if that is red the deploy
+job never starts**. Then:
 
-`unpack.php` reads `DEPLOY_TOKEN` straight out of the server's `.env` with a plain-text regex (no Laravel bootstrap available before the app is unpacked). Same token as `/deploy/migrate` — no extra secret needed.
+1. `composer install --no-dev` + `npm run build` on the runner
+2. Zips the build into one `deploy.zip` — uploading thousands of `vendor/` files
+   over FTP is what made the first attempt time out and get disconnected after
+   an hour
+3. Uploads two files: `deploy/unpack.php` → `public_html/public/unpack.php`, and
+   `deploy.zip` → `public_html/`
+4. `POST /unpack.php?token=…` — extracts server-side, deletes the zip, chmods
+   `storage/` and `bootstrap/cache` to 775, and clears any stale config/route
+   cache carried over from the previous release
+5. Probes `/.env`, `/config/app.php`, `/vendor/autoload.php` and others — **any
+   200 fails the run**
+6. `POST /deploy/migrate?token=…` — `migrate --force`, `storage:link`, and warms
+   config/route/view caches
 
-`.env` on the server is never overwritten by deploy — edit it directly via cPanel File Manager when needed (e.g. rotating `DEPLOY_TOKEN`).
+`unpack.php` reads `DEPLOY_TOKEN` straight out of the server's `.env` with a
+plain-text regex, since no Laravel bootstrap exists before the app is unpacked.
 
-Deploys are serialized by a `deploy-production` concurrency group. Two pushes in
-quick succession queue instead of interleaving — the unpack step extracts a zip in
-place, and a second upload landing mid-extract would corrupt the app.
+Deploys are serialized by a `deploy-production` concurrency group — the unpack
+step extracts in place, and a second upload landing mid-extract corrupts the app.
 
-Both server calls (`unpack.php`, `/deploy/migrate`) fail the job on a non-2xx
-response. A green Actions run means the code is live *and* migrations ran.
+The build writes `.deploy-build` (commit SHA + run ID) into the zip so two
+deploys of the same commit still differ. `FTP-Deploy-Action` skips uploads whose
+hash matches its server-side state file, which would otherwise leave `unpack.php`
+with no zip to extract.
 
-The build writes a `.deploy-build` file (commit SHA + run ID) into the zip. That
-is deliberate: `FTP-Deploy-Action` skips uploads whose hash matches its
-server-side state file, so re-deploying an unchanged commit would otherwise
-upload nothing and leave `unpack.php` with no zip to extract.
+## 4. CI
 
-## 3b. CI (tests)
+`.github/workflows/tests.yml` runs on pull requests, on pushes to non-`main`
+branches, and as a gate inside deploy:
 
-`.github/workflows/tests.yml` runs on every pull request and on every push to a
-non-`main` branch, and is also called by the deploy workflow:
+1. `./vendor/bin/pint --test`
+2. `php artisan test` — Pest against in-memory SQLite
+3. `npm ci && npm run build`
 
-1. `./vendor/bin/pint --test` — code style, fails on any unformatted file
-2. `php artisan test` — the Pest suite against in-memory SQLite (`phpunit.xml`)
-3. `npm ci && npm run build` — catches a broken Vite/Tailwind build before deploy
+Locally: `./vendor/bin/pint && php artisan test`
 
-Run the same checks locally before pushing:
+Pest runs core-only; `pest-plugin-laravel` caps at Laravel `^12.25` and this is
+Laravel 13. `Tests\TestCase` covers the helpers, and `tests/Pest.php` binds it
+plus `RefreshDatabase` to `tests/Feature`.
 
-```bash
-./vendor/bin/pint && php artisan test
-```
+## 5. First deploy checklist
 
-Testing runs on Pest 4 core. `pestphp/pest-plugin-laravel` is **not** installed —
-it currently caps at Laravel `^12.25` and this project is on Laravel 13. Nothing
-is lost: `Tests\TestCase` provides the Laravel testing helpers, and `tests/Pest.php`
-binds it (plus `RefreshDatabase`) to everything under `tests/Feature`.
-
-## 4. First deploy checklist
-
-- [ ] cPanel DB created, credentials in server `.env`
-- [ ] Document root points at `.../public`
-- [ ] Server `.env` uploaded manually with real `APP_KEY` and `DEPLOY_TOKEN`
-- [ ] All 6 GitHub Secrets set
+- [ ] Database created, credentials in `public_html/.env`
+- [ ] `.env` uploaded with real `APP_KEY` and `DEPLOY_TOKEN`
+- [ ] All 6 GitHub Secrets set, `FTP_SERVER_DIR` ending in `/`
 - [ ] Push to `main`, watch the Actions tab
-- [ ] Visit the domain — should hit `/login`
-- [ ] Check `storage/logs/laravel.log` via File Manager if something 500s
+- [ ] Visit the domain — should land on `/login`
+- [ ] Confirm `https://asset.kencomanufactur.co.id/.env` returns 403
 
-## 5. Notes
+## 6. Notes
 
-- No SSH means no `php artisan tinker` or ad-hoc commands on the server. Add any one-off command as a temporary route guarded by `DEPLOY_TOKEN`, run it once, then remove it.
-- Asset photo/QR uploads go to `storage/app/public`, served via the `storage:link` symlink the migrate endpoint creates. If uploads 404, re-trigger `/deploy/migrate` or check that PHP's `symlink()` isn't disabled by the host.
+- No SSH means no `php artisan tinker`. Add a one-off command as a temporary
+  route guarded by `DEPLOY_TOKEN`, run it once, then remove it.
+- Uploads go to `storage/app/public`, served through the `storage:link` symlink
+  the migrate endpoint creates. The `.htaccess` deliberately does not block
+  `/storage/` wholesale, only `storage/framework`, `storage/logs` and
+  `storage/app/private`, so uploaded photos and QR codes keep working.
+- A blank 500 with no `storage/logs/laravel.log` almost always means `storage/`
+  is not writable. `unpack.php` chmods it on every deploy, so this should not
+  recur; if it does, check the host did not reset ownership.

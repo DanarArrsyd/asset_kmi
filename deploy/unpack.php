@@ -73,8 +73,51 @@ foreach ([
     }
 }
 
+// ZipArchive keeps whatever permissions the runner's zip recorded, which on a
+// GitHub runner is not what this host's PHP process needs. If storage/ ends up
+// unwritable Laravel dies before its logger exists — a blank 500 with nothing
+// in laravel.log, which is exactly what this deploy produced on 2026-07-27.
+$chmodded = 0;
+
+foreach (['storage', 'bootstrap/cache'] as $dir) {
+    $path = "{$root}/{$dir}";
+
+    if (! is_dir($path)) {
+        continue;
+    }
+
+    @chmod($path, 0775);
+    $chmodded++;
+
+    $items = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($items as $item) {
+        @chmod($item->getPathname(), $item->isDir() ? 0775 : 0664);
+        $chmodded++;
+    }
+}
+
+// A config/route cache carried over from the previous release still points at
+// the old release's values. Laravel never re-reads .env once config.php exists,
+// so a stale one survives every later deploy until it is deleted.
+$stale = 0;
+
+foreach (glob("{$root}/bootstrap/cache/*.php") ?: [] as $cached) {
+    if (in_array(basename($cached), ['packages.php', 'services.php'], true)) {
+        continue;
+    }
+
+    unlink($cached);
+    $stale++;
+}
+
 header('Content-Type: text/plain');
 echo "Unpacked OK.\n";
+echo "Permissions fixed on {$chmodded} paths.\n";
+echo "Stale caches removed: {$stale}.\n";
 
 function blank(?string $value): bool
 {

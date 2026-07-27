@@ -1,0 +1,47 @@
+# Web root == app root.
+#
+# The host gives no way to point the document root at public/, so the app root
+# is the document root. Everything outside public/ has to be made unreachable
+# here instead of by the filesystem layout.
+#
+# This is weaker than putting the app above the web root: it holds only as long
+# as Apache honours this file. The deploy workflow therefore probes /.env after
+# every deploy and fails the run if it ever answers 200 — see
+# "Verify nothing sensitive is reachable" in .github/workflows/deploy.yml.
+
+Options -Indexes
+
+# Layer 1 — the rewrite below is what actually protects the app: every request
+# is forced into public/, so nothing else is addressable. Layer 2 is this deny
+# list, which still holds if mod_rewrite is missing or AllowOverride is cut back.
+<FilesMatch "^\.env|^composer\.(json|lock)$|^artisan$|^\.deploy-build$|\.(log|zip)$">
+    Require all denied
+</FilesMatch>
+
+# Same fallback, by directory. Without this, a host with mod_rewrite off leaves
+# every .php under app/, config/, routes/ and vendor/ directly executable — the
+# deny list above only covers files matched by name.
+#
+# storage/ is listed by subdirectory on purpose: blocking storage/ outright
+# would also block uploaded photos and QR codes, which Apache resolves through
+# the public/storage symlink into storage/app/public.
+RedirectMatch 404 ^/(app|bootstrap|config|database|resources|routes|vendor|storage/framework|storage/logs|storage/app/private)(/|$)
+
+# Layer 2 — serve the app out of public/ without exposing it in the URL.
+#
+# A request for /css/app.css becomes public/css/app.css. A request for
+# /app/Models/Asset.php becomes public/app/Models/Asset.php, which does not
+# exist, so public/.htaccess hands it to index.php and Laravel returns 404.
+# That is the point: app/, vendor/, storage/ and .env have no reachable path.
+#
+# Uploads still work — /storage/foo.jpg resolves through the public/storage
+# symlink that `storage:link` creates, not through the app's storage/ directory.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # The negative lookahead, not a REQUEST_URI condition, is what stops the
+    # rewrite loop. RewriteRule matches the path relative to this directory, so
+    # this holds whether the app is served from the document root or from a
+    # subfolder — the local Apache check runs under /asset_kenco/.
+    RewriteRule ^(?!public/)(.*)$ public/$1 [L]
+</IfModule>

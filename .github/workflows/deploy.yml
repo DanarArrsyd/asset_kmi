@@ -138,6 +138,40 @@ jobs:
               exit 1
             }
 
+      # The app root is also the web root on this host, so nothing but the root
+      # .htaccess keeps .env off the public internet. That file silently stops
+      # working if AllowOverride is narrowed or mod_rewrite goes away, so prove
+      # it still works on every deploy rather than assuming it does. These exact
+      # paths served 200 for two days in July 2026 before anyone noticed.
+      - name: Verify nothing sensitive is reachable
+        run: |
+          exposed=0
+          # config/app.php and routes/web.php are in here because they are the
+          # canary for mod_rewrite being off: the filename deny list still
+          # covers .env in that case, but every .php under app/, config/ and
+          # vendor/ becomes directly executable.
+          for path in /.env /.env.example /composer.json /composer.lock \
+                      /artisan /deploy.zip /.deploy-build \
+                      /storage/logs/laravel.log /vendor/autoload.php \
+                      /config/app.php /routes/web.php; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 30 \
+              "${{ secrets.APP_URL }}${path}" || echo 000)
+            if [ "$code" = "200" ]; then
+              echo "EXPOSED  ${path} -> 200"
+              exposed=1
+            else
+              echo "ok       ${path} -> ${code}"
+            fi
+          done
+          if [ "$exposed" -ne 0 ]; then
+            echo
+            echo "Files above are downloadable by anyone. Treat every credential"
+            echo "in the server .env as compromised and rotate it."
+            echo "Check that .htaccess reached the server and that the host still"
+            echo "honours it (AllowOverride All, mod_rewrite enabled)."
+            exit 1
+          fi
+
       - name: Run migrations (no SSH on host)
         run: |
           curl -sSf --max-time 300 -X POST \
