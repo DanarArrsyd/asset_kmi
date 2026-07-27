@@ -12,7 +12,6 @@
  * available yet on a fresh deploy), same DEPLOY_TOKEN used by
  * /deploy/migrate once the app itself is unpacked.
  */
-
 $envPath = __DIR__.'/../.env';
 
 if (! is_file($envPath)) {

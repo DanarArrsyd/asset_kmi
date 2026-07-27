@@ -13,9 +13,11 @@ use App\Models\Category;
 use App\Models\Department;
 use App\Models\Location;
 use App\Services\AssetService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AssetController extends Controller
 {
@@ -34,7 +36,7 @@ class AssetController extends Controller
         ]);
     }
 
-    public function export(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function export(Request $request): StreamedResponse
     {
         $this->authorize('viewAny', Asset::class);
 
@@ -63,7 +65,7 @@ class AssetController extends Controller
         }, $filename, ['Content-Type' => 'text/csv']);
     }
 
-    protected function filteredQuery(Request $request): \Illuminate\Database\Eloquent\Builder
+    protected function filteredQuery(Request $request): Builder
     {
         $user = $request->user();
 

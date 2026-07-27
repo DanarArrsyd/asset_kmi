@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\MasterData;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\View\View;
 
 abstract class MasterDataController extends Controller
 {
-    /** @var class-string<\Illuminate\Database\Eloquent\Model> */
+    /** @var class-string<Model> */
     protected string $modelClass;
 
     protected string $routeBase;
@@ -72,7 +73,7 @@ abstract class MasterDataController extends Controller
         try {
             $item->delete();
         } catch (QueryException) {
-            return back()->with('error', "Tidak bisa dihapus — masih dipakai oleh asset lain.");
+            return back()->with('error', 'Tidak bisa dihapus — masih dipakai oleh asset lain.');
         }
 
         return back()->with('status', 'deleted');
