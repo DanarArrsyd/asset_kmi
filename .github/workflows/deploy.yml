@@ -5,10 +5,46 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+# Never let two deploys interleave — the unpack step extracts a zip in
+# place on the server, so a second run landing mid-extract corrupts it.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  tests:
+    name: Tests
+    uses: ./.github/workflows/tests.yml
+
+  deploy:
+    name: Build and deploy
+    needs: tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
+      - name: Verify deploy secrets are set
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR }}
+          APP_URL: ${{ secrets.APP_URL }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          missing=()
+          for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD FTP_SERVER_DIR APP_URL DEPLOY_TOKEN; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "Missing repository secrets: ${missing[*]}"
+            echo "Set them under Settings -> Secrets and variables -> Actions (see DEPLOYMENT.md)."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -16,8 +52,22 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, bcmath, gd, imagick, pdo_mysql
+          extensions: mbstring, gd, dom, fileinfo
           coverage: none
+
+      - name: Resolve composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php8.3-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php8.3-
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -25,22 +75,32 @@ jobs:
           node-version: '20'
           cache: npm
 
-      - name: Install PHP dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
       - name: Install Node dependencies
         run: npm ci
 
       - name: Build frontend assets
         run: npm run build
 
+      # Stamps the build so two deploys of the same commit still produce
+      # different bytes — the FTP action skips uploads whose hash matches
+      # its server-side state file, which would leave unpack.php with no
+      # zip to extract.
+      - name: Stamp the build
+        run: |
+          printf 'commit=%s\nrun=%s\nref=%s\n' \
+            "${{ github.sha }}" "${{ github.run_id }}" "${{ github.ref_name }}" \
+            > .deploy-build
+
       - name: Zip the build (FTP upload is one file, not thousands)
         run: |
           zip -r -q ../deploy.zip . \
             -x ".git/*" ".github/*" "node_modules/*" "tests/*" \
-               "design-preview/*" "deploy/*" "storage/logs/*.log" \
-               ".env" ".env.example"
+               "design-preview/*" "deploy/*" \
+               "storage/logs/*.log" "storage/app/public/*" \
+               "bootstrap/cache/config.php" "bootstrap/cache/routes-*.php" \
+               ".env" ".env.example" "phpunit.xml"
           mv ../deploy.zip deploy.zip
+          ls -lh deploy.zip
 
       - name: Upload unpack.php (standalone, outside the zip)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -70,10 +130,20 @@ jobs:
 
       - name: Unpack on the server
         run: |
-          curl -sf -X POST "${{ secrets.APP_URL }}/unpack.php?token=${{ secrets.DEPLOY_TOKEN }}" \
-            || { echo "Unpack call failed — check FTP_SERVER_DIR/public/unpack.php was uploaded and DEPLOY_TOKEN matches server .env"; exit 1; }
+          curl -sSf --max-time 300 -X POST \
+            "${{ secrets.APP_URL }}/unpack.php?token=${{ secrets.DEPLOY_TOKEN }}" \
+            || {
+              echo "Unpack failed. Check that FTP_SERVER_DIR/public/unpack.php uploaded"
+              echo "and that DEPLOY_TOKEN matches DEPLOY_TOKEN in the server .env."
+              exit 1
+            }
 
       - name: Run migrations (no SSH on host)
         run: |
-          curl -sf -X POST "${{ secrets.APP_URL }}/deploy/migrate?token=${{ secrets.DEPLOY_TOKEN }}" \
-            || echo "Migration endpoint call failed — check DEPLOY_TOKEN / APP_URL secrets, or run manually."
+          curl -sSf --max-time 300 -X POST \
+            "${{ secrets.APP_URL }}/deploy/migrate?token=${{ secrets.DEPLOY_TOKEN }}" \
+            || {
+              echo "Migration endpoint failed. The new code is already live but the"
+              echo "database schema and caches were NOT updated — fix and re-run."
+              exit 1
+            }
