@@ -5,20 +5,20 @@
 @section('title', 'Tambah Asset')
 
 @section('breadcrumb')
-    <span>Home</span> / <a href="{{ route('assets.index') }}">Asset</a> / <span class="is-current">Tambah</span>
+    <x-breadcrumb :items="[
+        ['label' => 'Asset', 'href' => route('assets.index')],
+        ['label' => 'Tambah'],
+    ]" />
 @endsection
 
 @section('content')
-    <div class="page-header">
-        <div>
-            <h1>Tambah Asset</h1>
-            <p>Isi data asset baru. Nomor asset & QR dibuat otomatis.</p>
-        </div>
-    </div>
+    <x-page-header title="Tambah Asset" lede="Isi data asset baru. Nomor asset & QR dibuat otomatis." />
 
-    <div class="card" style="max-width: 720px;">
-        <form method="POST" action="{{ route('assets.store') }}" enctype="multipart/form-data">
-            @include('assets._form')
-        </form>
+    <div class="panel panel--form">
+        <div class="panel__body">
+            <form method="POST" action="{{ route('assets.store') }}" enctype="multipart/form-data">
+                @include('assets._form')
+            </form>
+        </div>
     </div>
 @endsection

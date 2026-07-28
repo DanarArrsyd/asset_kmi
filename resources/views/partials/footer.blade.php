@@ -1,3 +1,4 @@
 <footer class="footer">
-    &copy; {{ date('Y') }} STO Asset Inventory. All rights reserved.
+    <span>&copy; {{ date('Y') }} STO Asset Inventory</span>
+    <span>Kenco</span>
 </footer>

@@ -5,91 +5,95 @@
 @section('title', 'Asset')
 
 @section('breadcrumb')
-    <span>Home</span> / <span class="is-current">Asset</span>
+    <x-breadcrumb :items="[['label' => 'Asset']]" />
 @endsection
 
 @section('content')
-    <div class="page-header">
-        <div>
-            <h1>Asset</h1>
-            <p>Daftar seluruh aset perusahaan.</p>
-        </div>
+    <x-page-header title="Asset" lede="Daftar seluruh aset perusahaan.">
         @can('create', \App\Models\Asset::class)
             <a href="{{ route('assets.create') }}" class="btn btn--primary">
-                <i class="bi bi-plus-lg"></i> Tambah Asset
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah Asset
             </a>
         @endcan
-    </div>
+    </x-page-header>
 
-    <form method="GET" class="table-toolbar">
-        <label class="table-toolbar__search">
-            <i class="bi bi-search"></i>
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nomor / nama asset...">
-        </label>
-
-        <select name="status" class="form-control" onchange="this.form.submit()">
+    <x-table-toolbar :action="route('assets.index')"
+                     placeholder="Cari nomor / nama asset..."
+                     :export-url="route('assets.export', request()->query())">
+        <label class="sr-only" for="filterStatus">Status</label>
+        <select id="filterStatus" name="status" class="form-control">
             <option value="">Semua Status</option>
             @foreach ($statuses as $status)
                 <option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>
             @endforeach
         </select>
 
-        <select name="department_id" class="form-control" onchange="this.form.submit()">
+        <label class="sr-only" for="filterDepartment">Departemen</label>
+        <select id="filterDepartment" name="department_id" class="form-control">
             <option value="">Semua Departemen</option>
             @foreach ($departments as $department)
                 <option value="{{ $department->id }}" @selected((int) request('department_id') === $department->id)>{{ $department->name }}</option>
             @endforeach
         </select>
+    </x-table-toolbar>
 
-        <button type="submit" class="btn btn--secondary">Filter</button>
-        <a href="{{ route('assets.index') }}" class="btn btn--secondary">Reset</a>
-        <a href="{{ route('assets.export', request()->query()) }}" class="btn btn--secondary">
-            <i class="bi bi-download"></i> Export
-        </a>
-    </form>
+    <div class="panel">
+        <div class="panel__body panel__body--flush">
+            <div class="table-scroll">
+                <table class="table">
+                    <caption class="sr-only">Daftar asset</caption>
+                    <thead>
+                        <tr>
+                            <x-th-sort field="asset_number" label="No. Asset" />
+                            <x-th-sort field="name" label="Nama" />
+                            <th>Kategori</th>
+                            <th>Departemen</th>
+                            <th>Lokasi</th>
+                            <x-th-sort field="status" label="Status" />
+                            <th><span class="sr-only">Aksi</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($assets as $asset)
+                            <tr>
+                                <td><a href="{{ route('asset.public', $asset) }}">{{ $asset->asset_number }}</a></td>
+                                <td>{{ $asset->name }}</td>
+                                <td class="cell-muted">{{ $asset->category->name }}</td>
+                                <td class="cell-muted">{{ $asset->department->name }}</td>
+                                <td class="cell-muted">{{ $asset->location->name }}</td>
+                                <td><span class="pill {{ $asset->status->badgeClass() }}">{{ $asset->status->label() }}</span></td>
+                                <td class="cell-actions">
+                                    <div class="row-actions">
+                                        <a href="{{ route('asset.public', $asset) }}" class="btn btn--secondary btn--icon"
+                                           title="Detail {{ $asset->asset_number }}" aria-label="Detail {{ $asset->asset_number }}">
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
+                                        </a>
+                                        @can('update', $asset)
+                                            <a href="{{ route('assets.edit', $asset) }}" class="btn btn--secondary btn--icon"
+                                               title="Edit {{ $asset->asset_number }}" aria-label="Edit {{ $asset->asset_number }}">
+                                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                            </a>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="table-empty">
+                                    Belum ada asset.
+                                    @can('create', \App\Models\Asset::class)
+                                        <a href="{{ route('assets.create') }}" class="auth-link">Tambah asset pertama</a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <div class="table-wrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th><x-sort-link field="asset_number" label="No. Asset" /></th>
-                    <th><x-sort-link field="name" label="Nama" /></th>
-                    <th>Kategori</th>
-                    <th>Departemen</th>
-                    <th>Lokasi</th>
-                    <th><x-sort-link field="status" label="Status" /></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($assets as $asset)
-                    <tr>
-                        <td><a href="{{ route('asset.public', $asset) }}">{{ $asset->asset_number }}</a></td>
-                        <td>{{ $asset->name }}</td>
-                        <td class="cell-muted">{{ $asset->category->name }}</td>
-                        <td class="cell-muted">{{ $asset->department->name }}</td>
-                        <td class="cell-muted">{{ $asset->location->name }}</td>
-                        <td><span class="pill {{ $asset->status->badgeClass() }}">{{ $asset->status->label() }}</span></td>
-                        <td>
-                            <div class="row-actions">
-                                <a href="{{ route('asset.public', $asset) }}" class="btn btn--secondary" title="Detail"><i class="bi bi-eye"></i></a>
-                                @can('update', $asset)
-                                    <a href="{{ route('assets.edit', $asset) }}" class="btn btn--secondary" title="Edit"><i class="bi bi-pencil"></i></a>
-                                @endcan
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="table-empty">Belum ada asset. @can('create', \App\Models\Asset::class)<a href="{{ route('assets.create') }}" class="auth-link">Tambah asset pertama</a>@endcan</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <div class="pagination-bar">
-        <span>Menampilkan {{ $assets->firstItem() ?? 0 }}–{{ $assets->lastItem() ?? 0 }} dari {{ $assets->total() }} asset</span>
-        {{ $assets->onEachSide(1)->links() }}
+        <div class="panel__foot">
+            <x-pagination-bar :paginator="$assets" noun="asset" />
+        </div>
     </div>
 @endsection

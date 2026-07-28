@@ -69,18 +69,6 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
 
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-          cache: npm
-
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Build frontend assets
-        run: npm run build
-
       # Stamps the build so two deploys of the same commit still produce
       # different bytes — the FTP action skips uploads whose hash matches
       # its server-side state file, which would leave unpack.php with no
@@ -94,7 +82,7 @@ jobs:
       - name: Zip the build (FTP upload is one file, not thousands)
         run: |
           zip -r -q ../deploy.zip . \
-            -x ".git/*" ".github/*" "node_modules/*" "tests/*" \
+            -x ".git/*" ".github/*" "tests/*" \
                "design-preview/*" "deploy/*" \
                "storage/logs/*.log" "storage/app/public/*" \
                "bootstrap/cache/config.php" "bootstrap/cache/routes-*.php" \

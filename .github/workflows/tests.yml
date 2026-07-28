@@ -57,15 +57,3 @@ jobs:
 
       - name: Run test suite
         run: php artisan test
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-          cache: npm
-
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Build frontend assets
-        run: npm run build

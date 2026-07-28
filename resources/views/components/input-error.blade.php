@@ -1,7 +1,7 @@
 @props(['messages'])
 
 @if ($messages)
-    <ul {{ $attributes->merge(['class' => 'form-error']) }}>
+    <ul {{ $attributes->merge(['class' => 'form-error']) }} role="alert">
         @foreach ((array) $messages as $message)
             <li>{{ $message }}</li>
         @endforeach

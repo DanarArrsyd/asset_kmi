@@ -1,10 +1,14 @@
 /* Hallmark · route: custom (tuned) · genre: modern-minimal · structure: app-shell (CLAUDE.md-locked)
  * theme: STO-Navy · anchor: oklch(34.3% 0.077 251.6) [#163A5F] · display/body: Inter (project-locked, overrides font ban-list)
  * axes: paper-band=light / display-style=grotesk-sans / accent-hue=cool · studied: no
+ * design-system: design.md · designed-as-app
+ * pre-emit critique: P5 H5 E5 S5 R4 V4
+ * nav: N3 side-rail · footer: Ft2 inline · contrast: pass (40–41) · tokens: pass (48)
+ * mobile: pass (34, 49, 50–56) · honest: pass (46) · chrome: pass (47) · icons: pass (30)
  */
 
 :root {
-  /* Brand colors — exact from CLAUDE.md, converted to OKLCH */
+  /* ---------- Brand — exact from CLAUDE.md, converted to OKLCH ---------- */
   --color-primary: oklch(34.3% 0.077 251.6);       /* #163A5F */
   --color-primary-hover: oklch(40.0% 0.085 249.4);  /* #1E4A73 */
   --color-primary-active: oklch(29.1% 0.064 250.3); /* #0F2D4A */
@@ -12,20 +16,48 @@
   --color-bg: oklch(97.5% 0.005 258.3);             /* #F5F7FA */
   --color-surface: oklch(100% 0 0);                 /* #FFFFFF */
   --color-border: oklch(90.9% 0.017 250.9);         /* #D9E2EC */
-  --color-border-2: oklch(94% 0.010 251);           /* one step lighter, for nested dividers */
+  --color-border-2: oklch(94% 0.010 251);           /* nested dividers */
+  --color-border-strong: oklch(80% 0.030 251);      /* hover / emphasis border */
 
   --color-text: oklch(27.8% 0.030 256.8);           /* #1F2937 */
   --color-text-muted: oklch(55.1% 0.023 264.4);     /* #6B7280 */
 
+  /* ---------- Semantic: fill tokens (bars, pill backgrounds, progress) ---------- */
   --color-success: oklch(62.7% 0.170 149.2);        /* #16A34A */
   --color-warning: oklch(76.9% 0.165 70.1);         /* #F59E0B */
   --color-danger: oklch(57.7% 0.215 27.3);          /* #DC2626 */
+  --color-danger-hover: oklch(50% 0.215 27.3);
 
-  --color-focus: oklch(40.0% 0.20 251.6);           /* accent hue, higher chroma, focus-only */
-  --color-accent-ink: oklch(100% 0 0);              /* text-on-primary: primary L < 50, use paper */
+  /* ---------- Semantic: ink tokens (every glyph) ----------
+   * The fill tokens above fail WCAG at text sizes on --color-surface
+   * (#F59E0B is 2.15:1). Never colour text or icons with them. */
+  --color-success-ink: oklch(45% 0.150 149.2);      /* 5.1:1 on surface */
+  --color-warning-ink: oklch(47% 0.120 70.1);       /* 5.9:1 on surface */
+  --color-danger-ink: oklch(48% 0.200 27.3);        /* 7.0:1 on surface */
 
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, sans-serif;
+  /* ---------- Semantic: tinted surfaces ---------- */
+  --color-success-soft: oklch(62.7% 0.170 149.2 / 0.12);
+  --color-warning-soft: oklch(76.9% 0.165 70.1 / 0.16);
+  --color-danger-soft: oklch(57.7% 0.215 27.3 / 0.12);
+  --color-danger-rule: oklch(57.7% 0.215 27.3 / 0.35);
+  --color-info-soft: oklch(34.3% 0.077 251.6 / 0.10);
+
+  /* ---------- Chrome surfaces ---------- */
+  --color-focus: oklch(40.0% 0.200 251.6);          /* accent hue, focus-only */
+  --color-focus-soft: oklch(34.3% 0.077 251.6 / 0.15);
+  --color-accent-ink: oklch(100% 0 0);              /* text on --color-primary */
+  --color-overlay: oklch(20% 0.020 251 / 0.45);
+
+  --color-sidebar-ink: oklch(88% 0.020 251);
+  --color-sidebar-ink-muted: oklch(75% 0.030 251);
+  /* "soon" menu entries. Muted, but still ≥ 4.5:1 on the navy rail — a
+   * not-yet-available item must stay readable, not become decoration. */
+  --color-sidebar-ink-faint: oklch(73% 0.030 251);
+  --color-sidebar-rule: oklch(45% 0.060 251 / 0.4);
+  --color-sidebar-hover: oklch(100% 0 0 / 0.08);
+
+  /* ---------- Typography ---------- */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
@@ -39,7 +71,11 @@
   --text-2xl: 1.75rem;
   --text-display-s: 2.25rem;
 
-  /* Spacing — 4pt scale */
+  --leading-tight: 1.25;
+  --leading-base: 1.5;
+
+  /* ---------- Spacing — 4pt scale ---------- */
+  --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
@@ -49,24 +85,62 @@
   --space-2xl: 3rem;
   --space-3xl: 4rem;
 
-  /* Radius */
+  /* ---------- Measure ---------- */
+  --content-max: 1400px;
+  --form-max: 720px;
+  --form-max-sm: 560px;
+  --prose-max: 68ch;
+
+  /* ---------- Controls ---------- */
+  --control-h: 2.75rem;      /* 44px — standard touch target */
+  --control-h-sm: 2.5rem;    /* 40px — dense icon button in a table row */
+
+  /* ---------- Radius ---------- */
   --radius: 8px;
   --radius-sm: 6px;
+  --radius-chip: 6px;
   --radius-pill: 999px;
 
-  /* Motion */
+  /* ---------- Motion ---------- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-fast: 120ms;
   --dur-base: 180ms;
 
-  /* Chrome */
+  /* ---------- Chrome geometry ---------- */
   --sidebar-w: 260px;
   --sidebar-w-collapsed: 72px;
   --navbar-h: 64px;
+
+  /* ---------- Z-index — six named levels, no arbitrary values ---------- */
+  --z-sticky: 100;
+  --z-nav: 200;
+  --z-scrim: 250;
+  --z-sidebar: 300;
+  --z-dropdown: 400;
+  --z-dialog: 500;
+
+  /* ---------- Asset tokens ----------
+   * data: URIs cannot resolve var(); the payload lives here so no colour
+   * literal escapes into app.css (gate 48). */
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236B7280' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Any animation whose end state hides content must be disabled outright,
+   * not just shortened — otherwise the message vanishes before it is read. */
+  .form-saved {
+    animation: none !important;
+    opacity: 1 !important;
+  }
 }

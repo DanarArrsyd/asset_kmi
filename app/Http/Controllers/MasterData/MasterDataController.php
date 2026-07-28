@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\MasterData;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 abstract class MasterDataController extends Controller
 {
@@ -24,11 +26,11 @@ abstract class MasterDataController extends Controller
 
     abstract protected function rules(?int $ignoreId = null): array;
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', $this->modelClass);
 
-        $items = $this->modelClass::orderBy('name')->withCount('assets')->get();
+        $items = $this->filteredQuery($request)->paginate(15)->withQueryString();
 
         return view('master-data.index', [
             'items' => $items,
@@ -38,6 +40,57 @@ abstract class MasterDataController extends Controller
             'hasCode' => $this->hasCode,
             'modelClass' => $this->modelClass,
         ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', $this->modelClass);
+
+        $items = $this->filteredQuery($request)->get();
+        $hasCode = $this->hasCode;
+
+        $filename = $this->routeBase.'-'.now()->format('Y-m-d_His').'.csv';
+
+        return response()->streamDownload(function () use ($items, $hasCode) {
+            $handle = fopen('php://output', 'w');
+
+            $header = $hasCode ? ['Nama', 'Kode', 'Jumlah Asset'] : ['Nama', 'Jumlah Asset'];
+            fputcsv($handle, $header);
+
+            foreach ($items as $item) {
+                $row = $hasCode
+                    ? [$item->name, $item->code ?? '', $item->assets_count]
+                    : [$item->name, $item->assets_count];
+
+                fputcsv($handle, $row);
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    protected function filteredQuery(Request $request): Builder
+    {
+        $query = $this->modelClass::query()->withCount('assets');
+
+        if ($search = $request->string('q')->trim()->value()) {
+            $query->where(function (Builder $q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+
+                if ($this->hasCode) {
+                    $q->orWhere('code', 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $allowedSorts = array_values(array_filter(['name', $this->hasCode ? 'code' : null, 'assets_count']));
+
+        $sort = $request->string('sort')->value();
+        $sort = in_array($sort, $allowedSorts, true) ? $sort : 'name';
+
+        $direction = $request->string('direction')->value() === 'desc' ? 'desc' : 'asc';
+
+        return $query->orderBy($sort, $direction);
     }
 
     public function store(Request $request): RedirectResponse

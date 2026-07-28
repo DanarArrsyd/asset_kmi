@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssetCondition;
 use App\Enums\UserRole;
 use App\Http\Requests\StoreStockOpnameRequest;
 use App\Models\Asset;
 use App\Models\StockOpname;
 use App\Services\StockOpnameService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StockOpnameController extends Controller
 {
@@ -19,6 +22,44 @@ class StockOpnameController extends Controller
     {
         $this->authorize('viewAny', StockOpname::class);
 
+        $stockOpnames = $this->filteredQuery($request)->paginate(15)->withQueryString();
+
+        return view('stock-opname.index', [
+            'stockOpnames' => $stockOpnames,
+            'conditions' => AssetCondition::cases(),
+        ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', StockOpname::class);
+
+        $stockOpnames = $this->filteredQuery($request)->get();
+
+        $filename = 'stock-opname-'.now()->format('Y-m-d_His').'.csv';
+
+        return response()->streamDownload(function () use ($stockOpnames) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Tanggal', 'No. Asset', 'Nama Asset', 'Diperiksa Oleh', 'Condition', 'Status', 'Catatan']);
+
+            foreach ($stockOpnames as $sto) {
+                fputcsv($handle, [
+                    $sto->checked_at->format('Y-m-d H:i'),
+                    $sto->asset->asset_number,
+                    $sto->asset->name,
+                    $sto->user->name,
+                    $sto->condition->label(),
+                    $sto->status->label(),
+                    $sto->notes ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    protected function filteredQuery(Request $request): Builder
+    {
         $user = $request->user();
 
         $query = StockOpname::query()->with(['asset', 'user']);
@@ -32,9 +73,16 @@ class StockOpnameController extends Controller
                 ->orWhere('name', 'like', "%{$search}%"));
         }
 
-        $stockOpnames = $query->latest('checked_at')->paginate(15)->withQueryString();
+        if ($condition = $request->string('condition')->value()) {
+            $query->where('condition', $condition);
+        }
 
-        return view('stock-opname.index', ['stockOpnames' => $stockOpnames]);
+        $sort = $request->string('sort')->value();
+        $sort = in_array($sort, ['checked_at', 'condition', 'status'], true) ? $sort : 'checked_at';
+
+        $direction = $request->string('direction')->value() === 'asc' ? 'asc' : 'desc';
+
+        return $query->orderBy($sort, $direction);
     }
 
     public function create(Asset $asset): View
