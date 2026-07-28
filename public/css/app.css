@@ -660,6 +660,76 @@ select.form-control {
 }
 
 /* ==========================================================================
+   Form layout — create/edit pages
+   ========================================================================== */
+
+/* A form capped at --form-max on a 1400px column leaves half the page empty.
+ * Give the fields a column of their own and park the context the page already
+ * knows — the photo, what gets generated on save, what a role can do — beside
+ * them instead of nowhere. */
+.form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.form-layout__aside { display: grid; gap: var(--space-md); min-width: 0; }
+
+/* Aside panels stay quieter than the panel carrying the inputs. */
+.form-layout__aside .panel__head h2 { font-size: var(--text-sm); }
+.form-layout__aside .panel__body { padding: var(--space-md); }
+
+.form-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.form-note + .form-note { margin-top: var(--space-xs); }
+
+.form-note-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.form-note-list li {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: var(--space-xs);
+  align-items: start;
+}
+.form-note-list i { color: var(--color-text-muted); line-height: var(--leading-base); }
+
+/* Role reference. The selected role is marked so the list reads as an answer
+ * to the select, not as decoration next to it. */
+.role-list { display: grid; gap: var(--space-xs); }
+
+.role-list__item {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+}
+.role-list__item.is-active {
+  border-color: var(--color-border);
+  background: var(--color-bg);
+}
+
+.role-list__name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+.role-list__desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: var(--space-3xs) 0 0;
+}
+
+/* ==========================================================================
    Card — leaf tile. Never contains another card.
    ========================================================================== */
 
@@ -1090,6 +1160,7 @@ dialog.confirm-dialog > form > p { font-size: var(--text-sm); color: var(--color
 
 @media (max-width: 1200px) {
   .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .form-layout { grid-template-columns: minmax(0, 1fr); }
   .grid-2col { grid-template-columns: minmax(0, 1fr); }
   .detail-grid { grid-template-columns: minmax(0, 1fr); }
   .detail-grid--even { grid-template-columns: minmax(0, 1fr); }

@@ -14,11 +14,7 @@
 @section('content')
     <x-page-header title="Edit User" :lede="$targetUser->name.' — '.$targetUser->email" />
 
-    <div class="panel panel--form-sm">
-        <div class="panel__body">
-            <form method="POST" action="{{ route('users.update', $targetUser) }}">
-                @include('users._form')
-            </form>
-        </div>
-    </div>
+    <form method="POST" action="{{ route('users.update', $targetUser) }}">
+        @include('users._form')
+    </form>
 @endsection
