@@ -39,6 +39,10 @@ If Hostinger ever allows changing the document root, point it at
 3. **Upload `.env` manually, once** — gitignored on purpose, and the deploy
    never touches it. Put it at `public_html/.env`:
    - `APP_ENV=production`, `APP_DEBUG=false`
+   - `APP_NAME="SIMASET Kenco"` — every visible title, the sidebar wordmark and
+     the printed QR label read this. The deploy never rewrites `.env`, so a
+     rename in the repo does nothing on the server until this line is edited by
+     hand; an `.env` that still carries the old name keeps showing it.
    - `APP_URL=https://asset.kencomanufactur.co.id`
    - `APP_KEY=` — generate locally with `php artisan key:generate --show`
    - `DB_CONNECTION=mysql` plus `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`

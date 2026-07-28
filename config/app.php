@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'STO Asset Inventory'),
+    'name' => env('APP_NAME', 'SIMASET Kenco'),
 
     /*
     |--------------------------------------------------------------------------

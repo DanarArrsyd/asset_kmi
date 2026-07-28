@@ -1,4 +1,4 @@
 <footer class="footer">
-    <span>&copy; {{ date('Y') }} STO Asset Inventory</span>
+    <span>&copy; {{ date('Y') }} {{ config('app.name') }}</span>
     <span>Kenco</span>
 </footer>

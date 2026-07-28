@@ -54,8 +54,8 @@
 <body onload="window.print()">
     <div class="qr-sheet">
         <div class="qr-sheet__brand">
-            <img src="{{ asset('img/logo.png') }}" alt="">
-            <span>STO Asset Inventory</span>
+            <img src="@assetUrl('img/logo.png')" alt="">
+            <span>{{ config('app.name') }}</span>
         </div>
 
         <img class="qr" src="{{ Storage::url($asset->qr_path) }}" alt="QR code {{ $asset->asset_number }}">
