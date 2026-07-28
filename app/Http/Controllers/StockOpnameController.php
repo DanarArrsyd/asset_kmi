@@ -39,7 +39,7 @@ class StockOpnameController extends Controller
 
     public function create(Asset $asset): View
     {
-        $this->authorize('create', StockOpname::class);
+        $this->authorize('recordStockOpname', $asset);
 
         $asset->load(['category', 'brand', 'department', 'location']);
 

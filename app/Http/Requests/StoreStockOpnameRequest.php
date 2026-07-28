@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Enums\AssetCondition;
 use App\Enums\AssetStatus;
-use App\Models\StockOpname;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -12,7 +11,7 @@ class StoreStockOpnameRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('create', StockOpname::class);
+        return $this->user()->can('recordStockOpname', $this->route('asset'));
     }
 
     public function rules(): array
