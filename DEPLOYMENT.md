@@ -43,6 +43,7 @@ If Hostinger ever allows changing the document root, point it at
    - `APP_KEY=` — generate locally with `php artisan key:generate --show`
    - `DB_CONNECTION=mysql` plus `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
    - `DEPLOY_TOKEN=` — long random string, e.g. `php -r "echo bin2hex(random_bytes(32));"`
+   - `FIRST_ADMIN_EMAIL=` and `FIRST_ADMIN_PASSWORD=` — see section 3a
 
 `SESSION_DRIVER=file` and `CACHE_STORE=file` are the safer starting point: the
 login page then renders even if the DB credentials are wrong, which makes a bad
@@ -57,12 +58,19 @@ Settings → Secrets and variables → Actions:
 | `FTP_SERVER` | FTP host from hPanel |
 | `FTP_USERNAME` | FTP username |
 | `FTP_PASSWORD` | FTP password |
-| `FTP_SERVER_DIR` | `public_html/` — **must end with `/`** |
+| `FTP_SERVER_DIR` | `./` — **must end with `/`** |
 | `APP_URL` | `https://asset.kencomanufactur.co.id` — no trailing slash, no `/public` |
 | `DEPLOY_TOKEN` | identical to `DEPLOY_TOKEN` in the server `.env` |
 
 `FTP_SERVER_DIR` is concatenated directly (`${FTP_SERVER_DIR}public/`), so a
-missing slash silently uploads to a folder named `public_htmlpublic/`.
+missing slash silently uploads to a folder named `.public/`.
+
+It is `./`, not `public_html/`, because this FTP account lands *inside* the
+directory the domain serves. Setting it to `public_html/` on 2026-07-28 created
+a nested `public_html/public_html/` one level below the web root, and both
+upload steps still reported success. Confirm with HTTP rather than the FTP
+client if they ever disagree: `/deploy.zip` answering 404 while
+`/public_html/deploy.zip` answers 200 means the path is one level too deep.
 
 ## 3. How deploy works
 
@@ -94,6 +102,35 @@ The build writes `.deploy-build` (commit SHA + run ID) into the zip so two
 deploys of the same commit still differ. `FTP-Deploy-Action` skips uploads whose
 hash matches its server-side state file, which would otherwise leave `unpack.php`
 with no zip to extract.
+
+## 3a. Accounts and starter data
+
+There is no public registration. `/register` is gone; accounts are created by a
+Super Admin under `/users`.
+
+The first Super Admin comes from `FirstAdminSeeder`, which the migrate endpoint
+runs on every deploy. It does nothing unless the `users` table is empty, so it
+can neither mint a second admin nor reset an existing password. Set these in
+the server `.env` **before** the deploy that should create the account:
+
+```
+FIRST_ADMIN_NAME="Your Name"
+FIRST_ADMIN_EMAIL=you@company.com
+FIRST_ADMIN_PASSWORD=something-long
+```
+
+Delete `FIRST_ADMIN_PASSWORD` after signing in — the account exists from then
+on and the value is never read again.
+
+`MasterDataSeeder` runs alongside it and fills Department, Category, Location
+and Brand, each only while its own table is empty. A row deleted on purpose
+stays deleted.
+
+Timing matters if these are added to `.env` **after** a deploy: Laravel skips
+`.env` entirely whenever a config cache exists, so calling `/deploy/migrate` by
+hand reads stale values and the seeder finds nothing. A full deploy is immune —
+`unpack.php` clears the stale config cache before the migrate call. Either push
+again, or call the endpoint twice.
 
 ## 4. CI
 

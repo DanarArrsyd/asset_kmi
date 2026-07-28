@@ -3,43 +3,24 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\Department;
-use App\Models\Location;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * Local development seed.
+ *
+ * Production never runs this one — the deploy endpoint calls MasterDataSeeder
+ * and FirstAdminSeeder directly, because the test account below has a known
+ * password and has no business existing on a live server.
+ */
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
     public function run(): void
     {
-        $departments = collect([
-            ['name' => 'Produksi', 'code' => 'PRD'],
-            ['name' => 'Warehouse', 'code' => 'WH'],
-            ['name' => 'IT & Support', 'code' => 'IT'],
-            ['name' => 'Finance', 'code' => 'FIN'],
-        ])->map(fn ($d) => Department::create($d));
-
-        collect([
-            ['name' => 'Machinery', 'code' => 'MCH'],
-            ['name' => 'IT Equipment', 'code' => 'ITE'],
-            ['name' => 'Furniture', 'code' => 'FUR'],
-        ])->each(fn ($c) => Category::create($c));
-
-        collect([
-            ['name' => 'Kantor Pusat', 'code' => 'LOC-HQ'],
-            ['name' => 'Gudang A', 'code' => 'LOC-WHA'],
-            ['name' => 'Gudang B', 'code' => 'LOC-WHB'],
-        ])->each(fn ($l) => Location::create($l));
-
-        collect(['Dell', 'HP', 'Toyota', 'Generic'])
-            ->each(fn ($b) => Brand::create(['name' => $b]));
-
-        User::query()->update(['role' => UserRole::SuperAdmin]);
+        $this->call(MasterDataSeeder::class);
 
         User::factory()->create([
             'name' => 'Test User',

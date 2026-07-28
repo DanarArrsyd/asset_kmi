@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Database\Seeders\FirstAdminSeeder;
+use Database\Seeders\MasterDataSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +27,22 @@ class DeployController extends Controller
         Artisan::call('migrate', ['--force' => true]);
         $migrateOutput = Artisan::output();
 
+        // Both seeders are no-ops once their tables have rows, so running them
+        // on every deploy is safe. They are called by class rather than through
+        // DatabaseSeeder because that one also creates a test account with a
+        // known password.
+        Artisan::call('db:seed', [
+            '--class' => MasterDataSeeder::class,
+            '--force' => true,
+        ]);
+        $seedOutput = Artisan::output();
+
+        Artisan::call('db:seed', [
+            '--class' => FirstAdminSeeder::class,
+            '--force' => true,
+        ]);
+        $seedOutput .= Artisan::output();
+
         Artisan::call('storage:link');
         Artisan::call('config:cache');
         Artisan::call('route:cache');
@@ -32,6 +50,7 @@ class DeployController extends Controller
 
         Log::info('Deploy migration run via /deploy/migrate');
 
-        return response("Migrated.\n\n{$migrateOutput}", 200)->header('Content-Type', 'text/plain');
+        return response("Migrated.\n\n{$migrateOutput}\n{$seedOutput}", 200)
+            ->header('Content-Type', 'text/plain');
     }
 }

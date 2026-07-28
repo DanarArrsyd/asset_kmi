@@ -69,6 +69,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | First Administrator
+    |--------------------------------------------------------------------------
+    |
+    | Public registration is closed, so a brand-new database has no way in.
+    | FirstAdminSeeder creates one Super Admin from these values, and only
+    | while the users table is still empty.
+    |
+    | Set them in the server's .env before the first deploy, then delete
+    | FIRST_ADMIN_PASSWORD once you have signed in — the account exists from
+    | then on and the value is never read again.
+    |
+    */
+
+    'first_admin' => [
+        'name' => env('FIRST_ADMIN_NAME', 'Super Admin'),
+        'email' => env('FIRST_ADMIN_EMAIL'),
+        'password' => env('FIRST_ADMIN_PASSWORD'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
