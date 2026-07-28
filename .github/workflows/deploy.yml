@@ -128,13 +128,25 @@ jobs:
           state-name: .ftp-deploy-zip-state.json
           dangerous-clean-slate: false
 
+      # Called at /public/unpack.php, not /unpack.php, and that is deliberate.
+      #
+      # The root .htaccess is what maps / onto public/, but it ships inside
+      # deploy.zip — which only unpack.php can extract. On a first deploy, or
+      # any deploy onto a wiped web root, that .htaccess does not exist yet, so
+      # /unpack.php is a plain Apache 404 and the deploy deadlocks.
+      #
+      # /public/unpack.php resolves in both states: directly when there is no
+      # .htaccess, and unrewritten once there is, because the rewrite skips
+      # anything already under public/.
       - name: Unpack on the server
         run: |
           curl -sSf --max-time 300 -X POST \
-            "${{ secrets.APP_URL }}/unpack.php?token=${{ secrets.DEPLOY_TOKEN }}" \
+            "${{ secrets.APP_URL }}/public/unpack.php?token=${{ secrets.DEPLOY_TOKEN }}" \
             || {
-              echo "Unpack failed. Check that FTP_SERVER_DIR/public/unpack.php uploaded"
-              echo "and that DEPLOY_TOKEN matches DEPLOY_TOKEN in the server .env."
+              echo "Unpack failed. Check that FTP_SERVER_DIR points at the folder"
+              echo "the domain actually serves — the upload steps report success"
+              echo "even when they land somewhere the web server never reads."
+              echo "Also check DEPLOY_TOKEN matches DEPLOY_TOKEN in the server .env."
               exit 1
             }
 
