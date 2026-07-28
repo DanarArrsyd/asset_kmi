@@ -22,6 +22,21 @@ enum UserRole: string
     }
 
     /**
+     * What the role may actually do, phrased for whoever is picking one on the
+     * user form. Mirrors the policies — change both together.
+     */
+    public function description(): string
+    {
+        return match ($this) {
+            self::SuperAdmin => 'Akses penuh, termasuk kelola user.',
+            self::Admin => 'Kelola master data, transaksi, dan laporan. Tidak bisa kelola user.',
+            self::Auditor => 'Lihat semua asset dan jalankan stock opname. Tidak bisa ubah master data.',
+            self::Department => 'Lihat dan ubah asset departemennya sendiri.',
+            self::User => 'Hanya lihat asset departemennya sendiri.',
+        };
+    }
+
+    /**
      * Roles that can write master data carry the accent pill; the rest stay
      * neutral. Green is reserved for asset health and must not be spent here.
      */
