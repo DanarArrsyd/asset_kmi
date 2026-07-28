@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') — STO Asset Inventory</title>
+    <title>@yield('title', 'Dashboard') — {{ config('app.name') }}</title>
 
     <link rel="icon" type="image/png" sizes="64x64" href="@assetUrl('img/favicon-64.png')">
     <link rel="apple-touch-icon" href="@assetUrl('img/logo.png')">

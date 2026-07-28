@@ -47,7 +47,7 @@
 <aside class="sidebar" id="sidebar">
     <a href="{{ route('dashboard') }}" class="sidebar__brand">
         <span class="sidebar__brand-chip"><x-application-logo /></span>
-        <span class="brand-text">STO Asset</span>
+        <span class="brand-text">{{ config('app.name') }}</span>
     </a>
 
     <nav class="sidebar__nav" aria-label="Menu utama">

@@ -22,7 +22,7 @@
         <div class="auth-shell">
             <a href="{{ route('home') }}" class="auth-logo">
                 <x-application-logo />
-                <span>STO Asset</span>
+                <span>{{ config('app.name') }}</span>
             </a>
 
             <div class="auth-card">
