@@ -5,20 +5,21 @@
 @section('title', 'Edit Asset')
 
 @section('breadcrumb')
-    <span>Home</span> / <a href="{{ route('assets.index') }}">Asset</a> / <span class="is-current">{{ $asset->asset_number }}</span>
+    <x-breadcrumb :items="[
+        ['label' => 'Asset', 'href' => route('assets.index')],
+        ['label' => $asset->asset_number, 'href' => route('asset.public', $asset)],
+        ['label' => 'Edit'],
+    ]" />
 @endsection
 
 @section('content')
-    <div class="page-header">
-        <div>
-            <h1>Edit Asset</h1>
-            <p>{{ $asset->asset_number }} — {{ $asset->name }}</p>
-        </div>
-    </div>
+    <x-page-header title="Edit Asset" :lede="$asset->asset_number.' — '.$asset->name" />
 
-    <div class="card" style="max-width: 720px;">
-        <form method="POST" action="{{ route('assets.update', $asset) }}" enctype="multipart/form-data">
-            @include('assets._form')
-        </form>
+    <div class="panel panel--form">
+        <div class="panel__body">
+            <form method="POST" action="{{ route('assets.update', $asset) }}" enctype="multipart/form-data">
+                @include('assets._form')
+            </form>
+        </div>
     </div>
 @endsection

@@ -6,7 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') — STO Asset Inventory</title>
 
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('img/favicon-64.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo.png') }}">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -19,13 +23,15 @@
 
     @include('partials.sidebar')
 
-    <div>
+    {{-- Closes the mobile drawer. A real element, not a pseudo-element — an
+         ::after overlay cannot receive the tap that dismisses it. --}}
+    <button type="button" class="shell__scrim" id="sidebarScrim" aria-label="Tutup menu" tabindex="-1"></button>
+
+    <div class="shell__main">
         @include('partials.navbar')
 
-        <main class="content">
-            <div class="breadcrumb">
-                @yield('breadcrumb')
-            </div>
+        <main class="content" id="main-content">
+            @yield('breadcrumb')
 
             @yield('content')
         </main>
@@ -35,13 +41,50 @@
 </div>
 
 <script>
-    const shell = document.getElementById('shell');
-    document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-        shell.classList.toggle('is-collapsed');
-    });
-    document.getElementById('mobileToggle')?.addEventListener('click', () => {
-        shell.classList.toggle('is-mobile-open');
-    });
+    (function () {
+        const shell = document.getElementById('shell');
+        const railToggle = document.getElementById('sidebarToggle');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const scrim = document.getElementById('sidebarScrim');
+        const STORAGE_KEY = 'sto.sidebar.collapsed';
+
+        if (localStorage.getItem(STORAGE_KEY) === '1') {
+            shell.classList.add('is-collapsed');
+        }
+        syncRail();
+
+        railToggle?.addEventListener('click', () => {
+            const collapsed = shell.classList.toggle('is-collapsed');
+            localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+            syncRail();
+        });
+
+        mobileToggle?.addEventListener('click', () => setDrawer(! shell.classList.contains('is-mobile-open')));
+        scrim?.addEventListener('click', () => setDrawer(false));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && shell.classList.contains('is-mobile-open')) {
+                setDrawer(false);
+                mobileToggle?.focus();
+            }
+        });
+
+        function setDrawer(open) {
+            shell.classList.toggle('is-mobile-open', open);
+            mobileToggle?.setAttribute('aria-expanded', String(open));
+            if (scrim) scrim.tabIndex = open ? 0 : -1;
+        }
+
+        function syncRail() {
+            if (! railToggle) return;
+            const collapsed = shell.classList.contains('is-collapsed');
+            const icon = railToggle.querySelector('i');
+            railToggle.setAttribute('aria-expanded', String(! collapsed));
+            railToggle.setAttribute('aria-label', collapsed ? 'Lebarkan sidebar' : 'Ciutkan sidebar');
+            icon?.classList.toggle('bi-chevron-double-right', collapsed);
+            icon?.classList.toggle('bi-chevron-double-left', ! collapsed);
+        }
+    })();
 </script>
 
 @stack('scripts')

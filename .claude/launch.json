@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "laravel-dev",
+      "name": "sto",
       "runtimeExecutable": "php",
-      "runtimeArgs": ["artisan", "serve", "--port=8792"],
-      "port": 8792
+      "runtimeArgs": ["artisan", "serve", "--port=8123"],
+      "port": 8123
     }
   ]
 }

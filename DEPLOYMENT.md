@@ -75,10 +75,11 @@ client if they ever disagree: `/deploy.zip` answering 404 while
 ## 3. How deploy works
 
 Push to `main` → `.github/workflows/deploy.yml`. It first calls the reusable
-`tests.yml` workflow (Pint + Pest + asset build); **if that is red the deploy
+`tests.yml` workflow (Pint + Pest); **if that is red the deploy
 job never starts**. Then:
 
-1. `composer install --no-dev` + `npm run build` on the runner
+1. `composer install --no-dev` on the runner — there is no asset build step;
+   CSS is authored directly in `public/css/` and ships as-is
 2. Zips the build into one `deploy.zip` — uploading thousands of `vendor/` files
    over FTP is what made the first attempt time out and get disconnected after
    an hour
@@ -139,7 +140,10 @@ branches, and as a gate inside deploy:
 
 1. `./vendor/bin/pint --test`
 2. `php artisan test` — Pest against in-memory SQLite
-3. `npm ci && npm run build`
+
+There is no Node step. The frontend has no build: `public/css/tokens.css` and
+`public/css/app.css` are hand-authored and served directly, Blade carries the
+markup, and the only JavaScript is small inline blocks in the views.
 
 Locally: `./vendor/bin/pint && php artisan test`
 

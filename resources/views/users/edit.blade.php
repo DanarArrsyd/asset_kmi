@@ -5,20 +5,20 @@
 @section('title', 'Edit User')
 
 @section('breadcrumb')
-    <span>Home</span> / <a href="{{ route('users.index') }}">Users</a> / <span class="is-current">{{ $targetUser->name }}</span>
+    <x-breadcrumb :items="[
+        ['label' => 'Users', 'href' => route('users.index')],
+        ['label' => $targetUser->name],
+    ]" />
 @endsection
 
 @section('content')
-    <div class="page-header">
-        <div>
-            <h1>Edit User</h1>
-            <p>{{ $targetUser->name }} — {{ $targetUser->email }}</p>
-        </div>
-    </div>
+    <x-page-header title="Edit User" :lede="$targetUser->name.' — '.$targetUser->email" />
 
-    <div class="card" style="max-width: 640px;">
-        <form method="POST" action="{{ route('users.update', $targetUser) }}">
-            @include('users._form')
-        </form>
+    <div class="panel panel--form-sm">
+        <div class="panel__body">
+            <form method="POST" action="{{ route('users.update', $targetUser) }}">
+                @include('users._form')
+            </form>
+        </div>
     </div>
 @endsection

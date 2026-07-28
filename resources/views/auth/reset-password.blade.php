@@ -22,7 +22,7 @@
             <x-input-error :messages="$errors->get('password_confirmation')" />
         </div>
 
-        <div class="form-row" style="justify-content: flex-end;">
+        <div class="form-row form-row--end">
             <x-primary-button>
                 {{ __('Reset Password') }}
             </x-primary-button>

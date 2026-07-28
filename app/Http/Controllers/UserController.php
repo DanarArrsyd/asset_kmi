@@ -7,10 +7,12 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Department;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserController extends Controller
 {
@@ -18,10 +20,46 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
+        $users = $this->filteredQuery($request)->paginate(15)->withQueryString();
+
+        return view('users.index', [
+            'users' => $users,
+            'roles' => UserRole::cases(),
+        ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $this->authorize('viewAny', User::class);
+
+        $users = $this->filteredQuery($request)->get();
+
+        $filename = 'users-'.now()->format('Y-m-d_His').'.csv';
+
+        return response()->streamDownload(function () use ($users) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Nama', 'Email', 'Role', 'Department', 'Dibuat']);
+
+            foreach ($users as $user) {
+                fputcsv($handle, [
+                    $user->name,
+                    $user->email,
+                    $user->role->label(),
+                    $user->department->name ?? '',
+                    $user->created_at->format('Y-m-d H:i'),
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    protected function filteredQuery(Request $request): Builder
+    {
         $query = User::query()->with('department');
 
         if ($search = $request->string('q')->trim()->value()) {
-            $query->where(function ($q) use ($search) {
+            $query->where(function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
             });
@@ -31,12 +69,12 @@ class UserController extends Controller
             $query->where('role', $role);
         }
 
-        $users = $query->orderBy('name')->paginate(15)->withQueryString();
+        $sort = $request->string('sort')->value();
+        $sort = in_array($sort, ['name', 'email', 'role', 'created_at'], true) ? $sort : 'name';
 
-        return view('users.index', [
-            'users' => $users,
-            'roles' => UserRole::cases(),
-        ]);
+        $direction = $request->string('direction')->value() === 'desc' ? 'desc' : 'asc';
+
+        return $query->orderBy($sort, $direction);
     }
 
     public function create(): View

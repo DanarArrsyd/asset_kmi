@@ -1,0 +1,14 @@
+[
+  {
+    "date": "2026-07-28",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "STO-Navy",
+    "theme_axes": "light / grotesk-sans / cool",
+    "nav": "N3 side-rail",
+    "footer": "Ft2 inline",
+    "enrichment": "none",
+    "design_system": "design.md",
+    "brief": "STO Asset Inventory - app-wide layout pass, Kenco brand mark, shared page/toolbar partials"
+  }
+]

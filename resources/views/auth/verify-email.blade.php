@@ -19,7 +19,7 @@
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="auth-link" style="background:none;border:0;cursor:pointer;">
+            <button type="submit" class="auth-link">
                 {{ __('Log Out') }}
             </button>
         </form>

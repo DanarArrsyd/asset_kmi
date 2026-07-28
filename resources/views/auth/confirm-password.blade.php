@@ -12,7 +12,7 @@
             <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <div class="form-row" style="justify-content: flex-end;">
+        <div class="form-row form-row--end">
             <x-primary-button>
                 {{ __('Confirm') }}
             </x-primary-button>

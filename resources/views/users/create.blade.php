@@ -5,20 +5,20 @@
 @section('title', 'Tambah User')
 
 @section('breadcrumb')
-    <span>Home</span> / <a href="{{ route('users.index') }}">Users</a> / <span class="is-current">Tambah</span>
+    <x-breadcrumb :items="[
+        ['label' => 'Users', 'href' => route('users.index')],
+        ['label' => 'Tambah'],
+    ]" />
 @endsection
 
 @section('content')
-    <div class="page-header">
-        <div>
-            <h1>Tambah User</h1>
-            <p>Buat akun baru & tentukan role akses.</p>
-        </div>
-    </div>
+    <x-page-header title="Tambah User" lede="Buat akun baru & tentukan role akses." />
 
-    <div class="card" style="max-width: 640px;">
-        <form method="POST" action="{{ route('users.store') }}">
-            @include('users._form')
-        </form>
+    <div class="panel panel--form-sm">
+        <div class="panel__body">
+            <form method="POST" action="{{ route('users.store') }}">
+                @include('users._form')
+            </form>
+        </div>
     </div>
 @endsection

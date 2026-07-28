@@ -12,9 +12,11 @@ use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Internal application — there is no public surface. Land signed-in users on
+// the dashboard and everyone else on the login screen.
 Route::get('/', function () {
-    return view('welcome');
-});
+    return redirect()->route(auth()->check() ? 'dashboard' : 'login');
+})->name('home');
 
 Route::post('/deploy/migrate', [DeployController::class, 'migrate'])
     ->middleware('throttle:5,1')
@@ -41,10 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/assets/{asset}', [AssetController::class, 'destroy'])->name('assets.destroy');
 
     Route::get('/stock-opname', [StockOpnameController::class, 'index'])->name('stock-opname.index');
+    Route::get('/stock-opname/export', [StockOpnameController::class, 'export'])->name('stock-opname.export');
     Route::get('/assets/{asset}/stock-opname/create', [StockOpnameController::class, 'create'])->name('stock-opname.create');
     Route::post('/assets/{asset}/stock-opname', [StockOpnameController::class, 'store'])->name('stock-opname.store');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
@@ -58,6 +62,7 @@ Route::middleware('auth')->group(function () {
         'brands' => BrandController::class,
     ] as $prefix => $controller) {
         Route::get("/{$prefix}", [$controller, 'index'])->name("{$prefix}.index");
+        Route::get("/{$prefix}/export", [$controller, 'export'])->name("{$prefix}.export");
         Route::post("/{$prefix}", [$controller, 'store'])->name("{$prefix}.store");
         Route::put("/{$prefix}/{id}", [$controller, 'update'])->name("{$prefix}.update");
         Route::delete("/{$prefix}/{id}", [$controller, 'destroy'])->name("{$prefix}.destroy");
