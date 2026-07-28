@@ -1,4 +1,6 @@
-@import url('tokens.css');
+/* Tokens are linked separately by the layouts. An @import here would hide
+   tokens.css behind app.css's own cache entry, which is the bug this file
+   used to have. */
 
 /* ==========================================================================
    Base

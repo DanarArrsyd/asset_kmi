@@ -114,6 +114,15 @@ foreach (glob("{$root}/bootstrap/cache/*.php") ?: [] as $cached) {
     $stale++;
 }
 
+// Compiled Blade views normally expire on their source's mtime, but the unzip
+// writes whatever mtime the zip recorded — a clock skew in either direction
+// leaves the previous release's markup being served. Cheap to drop; Laravel
+// recompiles each view on first request.
+foreach (glob("{$root}/storage/framework/views/*.php") ?: [] as $compiled) {
+    unlink($compiled);
+    $stale++;
+}
+
 header('Content-Type: text/plain');
 echo "Unpacked OK.\n";
 echo "Permissions fixed on {$chmodded} paths.\n";

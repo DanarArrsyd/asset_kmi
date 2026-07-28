@@ -6,14 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') — STO Asset Inventory</title>
 
-    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('img/favicon-64.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('img/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="64x64" href="@assetUrl('img/favicon-64.png')">
+    <link rel="apple-touch-icon" href="@assetUrl('img/logo.png')">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {{-- Tokens first: app.css reads every custom property declared here. --}}
+    <link rel="stylesheet" href="@assetUrl('css/tokens.css')">
+    <link rel="stylesheet" href="@assetUrl('css/app.css')">
 
     @stack('styles')
 </head>

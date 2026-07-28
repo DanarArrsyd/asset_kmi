@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Support\AssetVersion;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Blade::directive('assetUrl', function (string $expression) {
+            return "<?php echo e(\\".AssetVersion::class."::url({$expression})); ?>";
+        });
     }
 }
