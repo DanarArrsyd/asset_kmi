@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::directive('assetUrl', function (string $expression) {
-            return "<?php echo e(\\".AssetVersion::class."::url({$expression})); ?>";
+            return '<?php echo e(\\'.AssetVersion::class."::url({$expression})); ?>";
         });
     }
 }
