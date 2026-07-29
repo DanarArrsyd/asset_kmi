@@ -17,6 +17,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Company Name
+    |--------------------------------------------------------------------------
+    |
+    | The legal name of the company that owns the system, as opposed to the
+    | name of the system itself. Sign-in screen and footer read it from here so
+    | the branding cannot drift apart across templates.
+    |
+    | Deliberately not an env var: it is the same in every environment, and a
+    | value in .env would need editing on the host to take effect.
+    |
+    */
+
+    'company' => 'PT. Kenco Manufactur Indonesia',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

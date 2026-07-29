@@ -34,8 +34,22 @@ it('frames the sign-in screen with the brand rail', function () {
     $response = $this->get('/login');
 
     $response->assertSee('auth-split__brand', false);
-    $response->assertSee('Sistem Manajemen Aset');
-    $response->assertSee('PT Kenco Manufacturing');
+    $response->assertSee('Sistem Manajemen Asset');
+    $response->assertSee(config('app.company'));
+    $response->assertDontSee('Stock Opname');
+});
+
+it('names the company from config rather than from each template', function () {
+    config(['app.company' => 'PT Percobaan']);
+
+    $this->get('/login')
+        ->assertOk()
+        ->assertSee('PT Percobaan');
+
+    $this->actingAs(userOfRole(UserRole::Admin))
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertSee('PT Percobaan');
 });
 
 it('leaves the QR landing page as a plain centred card', function () {
