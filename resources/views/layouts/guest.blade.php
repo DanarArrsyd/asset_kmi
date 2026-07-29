@@ -4,8 +4,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{-- The QR landing page is reachable without a session; asset numbers
+             have no business turning up in a search index. --}}
+        <meta name="robots" content="noindex, nofollow">
 
-        <title>Masuk — {{ config('app.name') }}</title>
+        <title>{{ $title ?? 'Masuk' }} — {{ config('app.name') }}</title>
 
         <link rel="icon" type="image/png" sizes="64x64" href="@assetUrl('img/favicon-64.png')">
         <link rel="apple-touch-icon" href="@assetUrl('img/logo.png')">
