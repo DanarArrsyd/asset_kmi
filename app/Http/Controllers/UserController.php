@@ -127,7 +127,7 @@ class UserController extends Controller
     {
         $this->authorize('delete', $user);
 
-        if ($user->role === UserRole::SuperAdmin && User::where('role', UserRole::SuperAdmin)->count() <= 1) {
+        if ($user->isLastSuperAdmin()) {
             return back()->with('error', 'Tidak bisa menghapus — minimal harus ada 1 Super Admin.');
         }
 

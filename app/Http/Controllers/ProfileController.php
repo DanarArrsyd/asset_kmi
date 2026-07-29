@@ -48,6 +48,13 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // The user list refuses to remove the last Super Admin. This page could,
+        // and the result is worse: nobody left who can create the replacement.
+        if ($user->isLastSuperAdmin()) {
+            return Redirect::route('profile.edit')
+                ->with('error', 'Tidak bisa menghapus akun — Anda satu-satunya Super Admin. Angkat Super Admin lain dulu.');
+        }
+
         Auth::logout();
 
         $user->delete();

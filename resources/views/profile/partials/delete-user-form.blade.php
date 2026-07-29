@@ -1,14 +1,17 @@
-<section class="panel panel--form-sm panel--danger">
+<section class="panel panel--danger">
     <div class="panel__head">
         <div class="panel__head-text">
-            <h2>{{ __('Delete Account') }}</h2>
-            <p>{{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}</p>
+            <h2>Hapus Akun</h2>
+            <p>
+                Akun yang dihapus tidak bisa dikembalikan, termasuk riwayat stock opname
+                yang pernah Anda catat. Hanya Super Admin yang bisa membuatkan akun baru.
+            </p>
         </div>
     </div>
 
     <div class="panel__body">
         <button type="button" class="btn btn--danger" id="deleteAccountTrigger">
-            {{ __('Delete Account') }}
+            Hapus Akun
         </button>
     </div>
 
@@ -17,19 +20,22 @@
             @csrf
             @method('delete')
 
-            <h2>{{ __('Are you sure you want to delete your account?') }}</h2>
-            <p>{{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}</p>
+            <h2>Hapus akun Anda?</h2>
+            <p>
+                Tindakan ini permanen. Riwayat stock opname atas nama Anda ikut terhapus.
+                Masukkan password untuk mengonfirmasi.
+            </p>
 
             <div class="form-group">
-                <x-input-label for="password" :value="__('Password')" class="sr-only" />
-                <x-text-input id="password" name="password" type="password" placeholder="{{ __('Password') }}"
+                <x-input-label for="password" value="Password" class="sr-only" />
+                <x-text-input id="password" name="password" type="password" placeholder="Password"
                               class="{{ $errors->userDeletion->has('password') ? 'is-invalid' : '' }}" />
                 <x-input-error :messages="$errors->userDeletion->get('password')" />
             </div>
 
             <div class="form-row form-row--end">
-                <button type="button" class="btn btn--secondary" id="deleteAccountCancel">{{ __('Cancel') }}</button>
-                <x-danger-button>{{ __('Delete Account') }}</x-danger-button>
+                <button type="button" class="btn btn--secondary" id="deleteAccountCancel">Batal</button>
+                <x-danger-button>Hapus Akun</x-danger-button>
             </div>
         </form>
     </dialog>
