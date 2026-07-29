@@ -9,11 +9,7 @@
     <link rel="icon" type="image/png" sizes="64x64" href="@assetUrl('img/favicon-64.png')">
     <link rel="apple-touch-icon" href="@assetUrl('img/logo.png')">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    {{-- Tokens first: app.css reads every custom property declared here. --}}
+    {{-- Tokens first: it declares @font-face and every custom property app.css reads. --}}
     <link rel="stylesheet" href="@assetUrl('css/tokens.css')">
     <link rel="stylesheet" href="@assetUrl('css/app.css')">
 
