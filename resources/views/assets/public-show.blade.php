@@ -32,11 +32,8 @@
             </div>
         </div>
 
-        <a href="{{ route('login') }}" class="btn btn--primary public-asset__cta">
-            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
-            Login untuk detail & mulai STO
-        </a>
-
+        {{-- No login button. A label anyone can photograph should not also
+             advertise where the sign-in form is; staff already know. --}}
         <p class="public-asset__note">
             Detail lengkap dan pencatatan stock opname hanya untuk staf {{ config('app.name') }}.
         </p>

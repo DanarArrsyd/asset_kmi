@@ -76,6 +76,16 @@ it('shows a visitor the date of the last stock take', function () {
         ->assertDontSee('Belum pernah di-STO');
 });
 
+it('does not point a stranger at the sign-in form', function () {
+    $asset = labelled();
+
+    $response = $this->get("/asset/{$asset->asset_number}");
+
+    $response->assertOk();
+    $response->assertDontSee('Login untuk detail');
+    $response->assertDontSee(route('login'));
+});
+
 it('keeps the page out of search indexes', function () {
     $asset = labelled();
 
