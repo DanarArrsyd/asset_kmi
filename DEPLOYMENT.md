@@ -40,14 +40,28 @@ If Hostinger ever allows changing the document root, point it at
    never touches it. Put it at `public_html/.env`:
    - `APP_ENV=production`, `APP_DEBUG=false`
    - `APP_NAME="SIMASET Kenco"` — every visible title, the sidebar wordmark and
-     the printed QR label read this. The deploy never rewrites `.env`, so a
-     rename in the repo does nothing on the server until this line is edited by
-     hand; an `.env` that still carries the old name keeps showing it.
+     the printed QR label read this. Renaming the app in the repo does nothing
+     on the server until this line is edited by hand. It also derives the
+     session cookie name, so changing it logs everyone out once.
    - `APP_URL=https://asset.kencomanufactur.co.id`
    - `APP_KEY=` — generate locally with `php artisan key:generate --show`
    - `DB_CONNECTION=mysql` plus `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
    - `DEPLOY_TOKEN=` — long random string, e.g. `php -r "echo bin2hex(random_bytes(32));"`
    - `FIRST_ADMIN_EMAIL=` and `FIRST_ADMIN_PASSWORD=` — see section 3a
+
+**Editing `.env` later takes one more step.** The deploy endpoint ends with
+`config:cache`, and Laravel stops reading `.env` the moment
+`bootstrap/cache/config.php` exists. Any edit made *after* a deploy is therefore
+invisible — the app keeps serving the values frozen at deploy time, with no
+error to say so. This bit on 2026-07-28: `APP_NAME` was edited correctly and the
+site kept serving the old name until the cache was rebuilt.
+
+Rebuild the cache after editing, either way:
+
+- Actions → **Deploy to cPanel** → **Run workflow**. It calls the deploy
+  endpoint, which regenerates config, route and view caches together.
+- Or delete `public_html/bootstrap/cache/config.php` in hPanel's file manager.
+  Laravel falls back to reading `.env` on the next request.
 
 `SESSION_DRIVER=file` and `CACHE_STORE=file` are the safer starting point: the
 login page then renders even if the DB credentials are wrong, which makes a bad
