@@ -119,13 +119,37 @@ class AssetController extends Controller
         return redirect()->route('asset.public', $asset)->with('status', 'asset-created');
     }
 
-    public function show(Asset $asset): View
+    /**
+     * The target of every printed QR code, so the URL must never change and the
+     * page must answer to a stranger holding a phone as well as to staff.
+     *
+     * Signed-in users who may see the record get the full detail page. Everyone
+     * else — not logged in, or scoped to another department — gets a summary
+     * that identifies the asset and says when it was last counted, without the
+     * location, PIC, price or specification a passer-by has no business reading
+     * off a sticker.
+     */
+    public function show(Request $request, Asset $asset): View
     {
-        $this->authorize('view', $asset);
+        $user = $request->user();
+
+        if (! $user || $user->cannot('view', $asset)) {
+            return $this->publicSummary($asset);
+        }
 
         $asset->load(['category', 'brand', 'department', 'location', 'stockOpnames.user']);
 
         return view('assets.show', ['asset' => $asset]);
+    }
+
+    protected function publicSummary(Asset $asset): View
+    {
+        $asset->load('category');
+
+        return view('assets.public-show', [
+            'asset' => $asset,
+            'lastCheckedAt' => $asset->stockOpnames()->value('checked_at'),
+        ]);
     }
 
     public function edit(Asset $asset): View

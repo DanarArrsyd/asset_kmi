@@ -26,12 +26,18 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// The one address printed on physical labels. Reachable without a session on
+// purpose — a QR nobody can scan is a QR nobody uses — but the controller only
+// hands a stranger the summary. Throttled because asset numbers are sequential
+// and therefore trivially enumerable.
+Route::get('/asset/{asset}', [AssetController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('asset.public');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/asset/{asset}', [AssetController::class, 'show'])->name('asset.public');
 
     Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
     Route::get('/assets/export', [AssetController::class, 'export'])->name('assets.export');

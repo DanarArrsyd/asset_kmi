@@ -104,14 +104,26 @@ it('refuses the read-only user every write path', function () {
     expect($asset->fresh()->name)->toBe($asset->name);
 });
 
-it('hides another department asset from a scoped user', function () {
+/**
+ * This used to assert a 403. The QR landing page is now reachable without a
+ * session, so the scoped user gets the same summary a stranger would — the
+ * detail stays hidden, which is what the policy was protecting. Asserting the
+ * withheld fields is a tighter check than asserting the status code was.
+ */
+it('hides another department asset detail from a scoped user', function () {
     $mine = department();
     $theirs = department('Finance', 'FIN');
     $asset = assetIn($theirs);
+    $asset->update(['pic' => 'Bukan Orang Sini', 'specification' => 'Rahasia departemen lain']);
 
-    $this->actingAs(userOfRole(UserRole::Department, $mine))
-        ->get("/asset/{$asset->asset_number}")
-        ->assertForbidden();
+    $response = $this->actingAs(userOfRole(UserRole::Department, $mine))
+        ->get("/asset/{$asset->asset_number}");
+
+    $response->assertOk();
+    $response->assertDontSee('Bukan Orang Sini');
+    $response->assertDontSee('Rahasia departemen lain');
+    $response->assertDontSee($asset->location->name);
+    $response->assertDontSee('Start STO');
 });
 
 it('keeps another department asset out of the list and the export', function () {
