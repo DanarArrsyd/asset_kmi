@@ -18,15 +18,41 @@
         <link rel="stylesheet" href="@assetUrl('css/app.css')">
     </head>
     <body>
-        <div class="auth-shell">
-            <a href="{{ route('home') }}" class="auth-logo">
-                <x-application-logo />
-                <span>{{ config('app.name') }}</span>
-            </a>
+        @if ($split)
+            <div class="auth-split">
+                {{-- Identity only. Nothing here is a call to action — this is an
+                     internal system, not a product someone is deciding to buy. --}}
+                <aside class="auth-split__brand">
+                    <div class="auth-split__mark">
+                        <span class="auth-split__chip"><x-application-logo /></span>
+                        <span class="auth-split__wordmark">{{ config('app.name') }}</span>
+                    </div>
 
-            <div class="auth-card">
-                {{ $slot }}
+                    <div class="auth-split__copy">
+                        <p class="auth-split__tagline">Sistem Manajemen Aset &amp; Stock Opname</p>
+                        <p class="auth-split__org">PT Kenco Manufacturing</p>
+                    </div>
+
+                    <p class="auth-split__foot">&copy; {{ date('Y') }} PT Kenco Manufacturing</p>
+                </aside>
+
+                <main class="auth-split__panel">
+                    <div class="auth-split__form">
+                        {{ $slot }}
+                    </div>
+                </main>
             </div>
-        </div>
+        @else
+            <div class="auth-shell">
+                <a href="{{ route('home') }}" class="auth-logo">
+                    <x-application-logo />
+                    <span>{{ config('app.name') }}</span>
+                </a>
+
+                <div class="auth-card">
+                    {{ $slot }}
+                </div>
+            </div>
+        @endif
     </body>
 </html>

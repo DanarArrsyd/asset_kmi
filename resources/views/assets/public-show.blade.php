@@ -1,4 +1,4 @@
-<x-guest-layout :title="$asset->asset_number">
+<x-guest-layout :title="$asset->asset_number" :split="false">
     {{-- Deliberately thin. Everything here is what someone standing next to the
          asset can already read off the label; the fields that would help
          somebody remove it are not on this page. --}}

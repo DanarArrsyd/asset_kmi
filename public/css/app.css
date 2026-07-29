@@ -457,6 +457,7 @@ h1, h2, h3 {
 .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
 .btn--sm { min-height: var(--control-h-sm); font-size: var(--text-sm); }
+.btn--block { width: 100%; justify-content: center; }
 .btn--icon {
   width: var(--control-h-sm);
   min-height: var(--control-h-sm);
@@ -478,6 +479,102 @@ h1, h2, h3 {
 /* ==========================================================================
    Auth — Letter macrostructure
    ========================================================================== */
+
+/* Sign-in — brand rail beside the form.
+ *
+ * The rail is a flat block of the primary navy, not a gradient or a photo: it
+ * says whose system this is and stops. The form stays on the light side so the
+ * fields keep exactly the contrast they have everywhere else in the app.
+ */
+.auth-split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  min-height: 100vh;
+}
+
+.auth-split__brand {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-primary);
+  color: var(--color-sidebar-ink);
+  padding: var(--space-2xl) var(--space-xl);
+  min-width: 0;
+}
+
+.auth-split__mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.auth-split__chip {
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-chip);
+  background: var(--color-surface);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 2px;
+}
+.auth-split__chip img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.auth-split__wordmark {
+  color: var(--color-accent-ink);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+}
+
+/* Takes the slack between the mark and the footer, so the copy sits optically
+ * centred without a magic offset. */
+.auth-split__copy { margin-block: auto; }
+.auth-split__tagline {
+  margin: 0;
+  color: var(--color-accent-ink);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+}
+.auth-split__org {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-sidebar-ink-muted);
+  font-size: var(--text-sm);
+}
+.auth-split__foot {
+  margin: 0;
+  color: var(--color-sidebar-ink-faint);
+  font-size: var(--text-sm);
+}
+
+.auth-split__panel {
+  display: grid;
+  place-items: center;
+  background: var(--color-bg);
+  padding: var(--space-2xl) var(--space-xl);
+  min-width: 0;
+}
+.auth-split__form { width: 100%; max-width: 380px; }
+
+.auth-head { margin-bottom: var(--space-lg); }
+.auth-head h1 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+.auth-head p {
+  margin: var(--space-2xs) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.auth-foot {
+  margin: var(--space-md) 0 0;
+  font-size: var(--text-sm);
+  text-align: center;
+}
 
 .auth-shell {
   min-height: 100vh;
@@ -1261,6 +1358,27 @@ dialog.confirm-dialog > form > p { font-size: var(--text-sm); color: var(--color
   .form-grid { grid-template-columns: minmax(0, 1fr); }
   .detail-fields { grid-template-columns: minmax(0, 1fr); }
   .navbar__user-meta { display: none; }
+
+  /* The rail becomes a header strip. The tagline goes with it — on a phone the
+   * form is the whole reason the page is open. */
+  /* auto/1fr, not two auto rows: grid stretches auto rows to fill the min-height
+   * and the strip ends up half the screen. */
+  .auth-split {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    min-height: 100dvh;
+  }
+  .auth-split__brand {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+  }
+  .auth-split__copy,
+  .auth-split__foot { display: none; }
+  .auth-split__panel {
+    align-content: start;
+    padding: var(--space-2xl) var(--space-lg);
+  }
 }
 
 @media (max-width: 768px) {
