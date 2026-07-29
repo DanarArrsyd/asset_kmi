@@ -1,7 +1,8 @@
-<x-guest-layout>
-    <div class="auth-card__lede">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+<x-guest-layout title="Lupa Password">
+    <header class="auth-head">
+        <h1>Lupa Password</h1>
+        <p>Masukkan email akun Anda. Kami kirimkan tautan untuk membuat password baru.</p>
+    </header>
 
     <x-auth-session-status :status="session('status')" />
 
@@ -9,15 +10,16 @@
         @csrf
 
         <div class="form-group">
-            <x-input-label for="email" :value="__('Email')" :required="true" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus />
+            <x-input-label for="email" value="Email" :required="true" />
+            <x-text-input id="email" type="email" name="email" :value="old('email')"
+                          class="{{ $errors->has('email') ? 'is-invalid' : '' }}" required autofocus />
             <x-input-error :messages="$errors->get('email')" />
         </div>
 
-        <div class="form-row form-row--end">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+        <x-primary-button class="btn--block">Kirim Tautan Reset</x-primary-button>
+
+        <p class="auth-foot">
+            <a class="auth-link" href="{{ route('login') }}">Kembali ke halaman masuk</a>
+        </p>
     </form>
 </x-guest-layout>

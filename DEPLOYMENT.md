@@ -43,6 +43,9 @@ If Hostinger ever allows changing the document root, point it at
      the printed QR label read this. Renaming the app in the repo does nothing
      on the server until this line is edited by hand. It also derives the
      session cookie name, so changing it logs everyone out once.
+   - `APP_LOCALE=id` — framework messages (failed sign-in, password reset) read
+     from `lang/id`. Left at `en` they come back in English on an otherwise
+     Indonesian screen.
    - `APP_URL=https://asset.kencomanufactur.co.id`
    - `APP_KEY=` — generate locally with `php artisan key:generate --show`
    - `DB_CONNECTION=mysql` plus `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
