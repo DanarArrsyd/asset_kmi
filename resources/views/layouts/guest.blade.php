@@ -29,11 +29,11 @@
                     </div>
 
                     <div class="auth-split__copy">
-                        <p class="auth-split__tagline">Sistem Manajemen Aset &amp; Stock Opname</p>
-                        <p class="auth-split__org">PT Kenco Manufacturing</p>
+                        <p class="auth-split__tagline">Sistem Manajemen Asset</p>
+                        <p class="auth-split__org">{{ config('app.company') }}</p>
                     </div>
 
-                    <p class="auth-split__foot">&copy; {{ date('Y') }} PT Kenco Manufacturing</p>
+                    <p class="auth-split__foot">&copy; {{ date('Y') }} {{ config('app.company') }}</p>
                 </aside>
 
                 <main class="auth-split__panel">
