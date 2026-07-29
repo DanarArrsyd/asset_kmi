@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +30,10 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            // The column defaults to 'user' in the database, so a model built
+            // without one does not match the row that gets written — and every
+            // view that reads $user->role fatals on the stale instance.
+            'role' => UserRole::User,
             'remember_token' => Str::random(10),
         ];
     }

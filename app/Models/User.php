@@ -37,4 +37,17 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
+
+    /**
+     * Whether deleting this account would leave nobody able to manage users.
+     *
+     * Asked in two places — an admin removing someone from the user list, and
+     * someone removing themselves from their own profile — so the rule lives
+     * here rather than being written twice and drifting.
+     */
+    public function isLastSuperAdmin(): bool
+    {
+        return $this->role === UserRole::SuperAdmin
+            && static::query()->where('role', UserRole::SuperAdmin)->count() <= 1;
+    }
 }
