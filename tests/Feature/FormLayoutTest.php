@@ -15,7 +15,7 @@ it('shows the photo panel and what gets generated beside the asset form', functi
     $response->assertSee('form-layout__aside', false);
     $response->assertSee('Foto Asset');
     $response->assertSee('Dibuat Otomatis');
-    $response->assertSee('AST000001');
+    $response->assertSee('AST-KMI-0001');
 });
 
 it('shows the asset identity beside the edit form', function () {

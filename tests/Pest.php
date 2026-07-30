@@ -60,7 +60,7 @@ function userOfRole(UserRole $role, ?Department $department = null): User
  * A saved asset in $department, with the master data it needs created inline.
  * Number is caller-supplied so a spec can hold several at once.
  */
-function assetIn(Department $department, string $number = 'AST000001'): Asset
+function assetIn(Department $department, string $number = 'AST-KMI-0001'): Asset
 {
     return Asset::create([
         'asset_number' => $number,

@@ -129,24 +129,24 @@ it('hides another department asset detail from a scoped user', function () {
 it('keeps another department asset out of the list and the export', function () {
     $mine = department();
     $theirs = department('Finance', 'FIN');
-    assetIn($mine, 'AST000001');
-    assetIn($theirs, 'AST000002');
+    assetIn($mine, 'AST-KMI-0001');
+    assetIn($theirs, 'AST-KMI-0002');
 
     $this->actingAs(userOfRole(UserRole::User, $mine))
         ->get('/assets')
         ->assertOk()
-        ->assertSee('AST000001')
-        ->assertDontSee('AST000002');
+        ->assertSee('AST-KMI-0001')
+        ->assertDontSee('AST-KMI-0002');
 });
 
 it('cannot widen its own scope through the department filter', function () {
     $mine = department();
     $theirs = department('Finance', 'FIN');
-    assetIn($mine, 'AST000001');
-    assetIn($theirs, 'AST000002');
+    assetIn($mine, 'AST-KMI-0001');
+    assetIn($theirs, 'AST-KMI-0002');
 
     $this->actingAs(userOfRole(UserRole::User, $mine))
         ->get("/assets?department_id={$theirs->id}")
         ->assertOk()
-        ->assertDontSee('AST000002');
+        ->assertDontSee('AST-KMI-0002');
 });

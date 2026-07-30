@@ -338,7 +338,7 @@ QR Code stores only a unique URL.
 
 Example
 
-https://domain.com/asset/AST000001
+https://domain.com/asset/AST-KMI-0001
 
 Never store asset information directly inside the QR Code.
 

@@ -183,7 +183,7 @@
                     <ul class="form-note-list">
                         <li>
                             <i class="bi bi-hash" aria-hidden="true"></i>
-                            <span>Nomor asset berurutan, format <strong>AST000001</strong>.</span>
+                            <span>Nomor asset berurutan, format <strong>AST-KMI-0001</strong>.</span>
                         </li>
                         <li>
                             <i class="bi bi-qr-code" aria-hidden="true"></i>
