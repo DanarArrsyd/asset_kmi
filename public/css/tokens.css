@@ -12,7 +12,7 @@
    never overwriting one of these.
 
    Inter is the variable latin subset: one file covers 400 through 700.
-   bootstrap-icons is subsetted to the 42 glyphs this app actually uses,
+   bootstrap-icons is subsetted to the 43 glyphs this app actually uses,
    rebuild it when an icon is added — see FONTS.md. */
 
 @font-face {
@@ -29,7 +29,7 @@
   font-style: normal;
   font-weight: normal;
   font-display: block;
-  src: url('../fonts/bootstrap-icons-subset.4f9e267d.woff2') format('woff2');
+  src: url('../fonts/bootstrap-icons-subset.5ce49b70.woff2') format('woff2');
 }
 
 /* Hallmark · route: custom (tuned) · genre: modern-minimal · structure: app-shell (CLAUDE.md-locked)

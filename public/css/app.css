@@ -738,6 +738,8 @@ select.form-control {
 }
 .form-status--success { color: var(--color-success-ink); background: var(--color-success-soft); }
 .form-status--error { color: var(--color-danger-ink); background: var(--color-danger-soft); }
+/* Neither good news nor bad — context the form needs before it is submitted. */
+.form-status--info { color: var(--color-primary); background: var(--color-info-soft); }
 
 .form-check {
   display: flex;
@@ -1350,6 +1352,7 @@ dialog.confirm-dialog > form > p { font-size: var(--text-sm); color: var(--color
 .bi-chevron-down::before { content: "\f282"; }
 .bi-clipboard-check::before { content: "\f28b"; }
 .bi-clock-history::before { content: "\f292"; }
+.bi-copy::before { content: "\f759"; }
 .bi-diagram-3::before { content: "\f2ee"; }
 .bi-download::before { content: "\f30a"; }
 .bi-envelope::before { content: "\f32f"; }
