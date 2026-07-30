@@ -1,10 +1,16 @@
 # CLAUDE.md
 
-# STO Asset Inventory System
+# SIMASET Kenco
 
 ## Project Goal
 
-Build a professional web-based Asset Inventory & Stock Take (STO) system for internal company use.
+An internal web system for recording and auditing the assets of
+PT. Kenco Manufactur Indonesia. Every asset carries a QR label; scanning it opens
+the record, and stock opname is performed from there.
+
+Named SIMASET Kenco — Sistem Manajemen Aset. It was called "STO Asset Inventory"
+until stock opname turned out to be one module among several, with maintenance,
+transfer and disposal ahead of it. Do not name the system after a feature.
 
 The application must prioritize:
 
@@ -46,8 +52,13 @@ Backend
 Frontend
 
 * Blade
-* Bootstrap 5
 * Vanilla JavaScript
+* Hand-written CSS driven by design tokens — no CSS framework
+
+There is no build step. `public/css/tokens.css` holds the tokens and the
+`@font-face` rules; `public/css/app.css` holds everything else and is linked
+after it. Both are served straight from `public/`, fingerprinted by
+`@assetUrl` — see `FONTS.md` before touching either font file.
 
 Database
 
@@ -57,8 +68,10 @@ Package
 
 * Laravel Breeze
 * Simple QR Code
-* Laravel DomPDF
-* Laravel Excel
+
+Exports are CSV, written with `fputcsv` straight to a streamed response. There
+is no Laravel Excel and no PDF package: nothing has needed xlsx or PDF output
+yet, and neither should be added on spec.
 
 ---
 
@@ -126,6 +139,33 @@ Warning
 Danger
 
 `#DC2626`
+
+---
+
+# Language
+
+The interface is Indonesian. Labels, headings, buttons, empty states, flash
+messages and CSV headers are written in Indonesian directly in the templates —
+there is no translation layer for our own copy and none is wanted.
+
+Framework messages come from `lang/id` (`validation.php`, `auth.php`,
+`passwords.php`) and need `APP_LOCALE=id`. That value lives in `.env`, which the
+deploy never rewrites, so changing it means editing the host by hand and
+rebuilding the config cache — see DEPLOYMENT.md.
+
+Only the validation rules this app uses are translated; the rest fall back to
+English, which is correct for a message nobody has had reason to phrase yet.
+Field names belong in the `attributes` map so a failure names the label the user
+sees rather than a database column.
+
+Kept in English on purpose:
+
+* Role names — identifiers from the access matrix, not copy
+* Loanwords Indonesian offices already use: Dashboard, Status, Brand, Model,
+  PIC, Filter, Reset, Export, Stock Opname, Maintenance, Asset
+
+The company name is `config('app.company')`, the system name is
+`config('app.name')`. Never type either into a template.
 
 ---
 
@@ -245,6 +285,10 @@ Users
 
 Profile
 
+Maintenance, Asset Transfer, Reports and Settings are placeholders — rendered
+with a `soon` badge and no route. Keep them visible so the shape of the system
+is legible, but do not link them until the module exists.
+
 ---
 
 # Dashboard
@@ -297,6 +341,16 @@ Example
 https://domain.com/asset/AST000001
 
 Never store asset information directly inside the QR Code.
+
+That URL is reachable without a session, because a label nobody can scan is a
+label nobody uses. `AssetController::show` decides what comes back: staff who
+may see the record get the full detail page, everyone else gets a summary with
+the asset number, name, category, status, condition and the date of the last
+stock take. Location, PIC, purchase date, specification and photo stay behind
+the login — a sticker on a rack can be photographed by any visitor walking past.
+
+The route is throttled and carries `noindex`, since asset numbers are sequential
+and therefore trivially enumerable.
 
 ---
 
@@ -470,6 +524,11 @@ Use Bootstrap Icons only.
 
 Keep icon usage consistent.
 
+The font is subsetted to the glyphs actually referenced, so a `bi-` class that
+is not listed in `app.css` renders a blank space with no error. Adding an icon
+means rebuilding the subset — `FONTS.md` has the steps, and `IconCoverageTest`
+fails if you forget.
+
 ---
 
 # Cards
@@ -500,7 +559,18 @@ Department — read/edit own department's assets only, request transfer/maintena
 
 User — read-only own department assets, no edit.
 
-Enforce via Laravel Policy per model (Asset, Category, Department, Location, Brand). Never check role inline in Blade/Controller — always through Policy/Gate.
+Enforce via Laravel Policy per model (Asset, Category, Department, Location,
+Brand, StockOpname, User). Never check role inline in Blade/Controller — always
+through Policy/Gate.
+
+Brand, Category, Department and Location share the `ManagesMasterData` trait, so
+their matrix is defined in one place.
+
+Two rules that are easy to break by accident: the last Super Admin cannot be
+deleted, from the user list or from their own profile — ask
+`User::isLastSuperAdmin()`, never re-implement the count. And role names
+(Super Admin, Admin, Auditor, Department, User) stay in English, because they are
+identifiers from this matrix rather than interface copy.
 
 Protect every route.
 
@@ -513,8 +583,12 @@ Use Pest.
 Required coverage
 
 * Feature test per Controller action (CRUD, auth, authorization)
-* Unit test per Service Class
+* Test per Service Class, covering what only that service decides
 * Policy test per role x action matrix
+
+`tests/Unit` stays framework-free, so service tests live in
+`tests/Feature/Services` — both services talk to the database and the disk, and
+a framework-free test of them would assert nothing.
 
 Run tests before merge. No PR without passing tests.
 
