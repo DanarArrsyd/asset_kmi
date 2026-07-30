@@ -49,12 +49,36 @@ class AssetService
         $asset->delete();
     }
 
+    /** Printed on every physical label, so the shape is fixed: AST-KMI-0001. */
+    public const NUMBER_PREFIX = 'AST-KMI-';
+
+    /** Padded to four digits. The 10,000th asset simply becomes five. */
+    public const NUMBER_PAD = 4;
+
     protected function nextAssetNumber(): string
     {
         $last = Asset::query()->lockForUpdate()->orderByDesc('id')->value('asset_number');
-        $next = $last ? ((int) substr($last, 3)) + 1 : 1;
 
-        return 'AST'.str_pad((string) $next, 6, '0', STR_PAD_LEFT);
+        return self::formatNumber($last ? self::sequenceOf($last) + 1 : 1);
+    }
+
+    public static function formatNumber(int $sequence): string
+    {
+        return self::NUMBER_PREFIX.str_pad((string) $sequence, self::NUMBER_PAD, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * The trailing digits of an asset number.
+     *
+     * Reads the tail rather than slicing at a fixed offset, so it survives both
+     * the pre-2026-07 format (AST000001) and a number that has outgrown its
+     * padding (AST-KMI-10000).
+     */
+    public static function sequenceOf(string $assetNumber): int
+    {
+        preg_match('/(\d+)$/', $assetNumber, $matches);
+
+        return (int) ($matches[1] ?? 0);
     }
 
     protected function storePhoto(UploadedFile $photo): string

@@ -36,10 +36,10 @@ function assetPayload(array $overrides = []): array
     ], $overrides);
 }
 
-it('numbers the first asset AST000001', function () {
+it('numbers the first asset AST-KMI-0001', function () {
     $asset = app(AssetService::class)->create(assetPayload(), null);
 
-    expect($asset->asset_number)->toBe('AST000001');
+    expect($asset->asset_number)->toBe('AST-KMI-0001');
 });
 
 it('numbers each asset one above the last', function () {
@@ -48,22 +48,44 @@ it('numbers each asset one above the last', function () {
     $first = $service->create(assetPayload(), null);
     $second = $service->create(assetPayload(['name' => 'Laptop']), null);
 
-    expect($first->asset_number)->toBe('AST000001');
-    expect($second->asset_number)->toBe('AST000002');
+    expect($first->asset_number)->toBe('AST-KMI-0001');
+    expect($second->asset_number)->toBe('AST-KMI-0002');
 });
 
 it('continues from the highest existing number rather than from the row count', function () {
-    assetIn(department(), 'AST000009');
+    assetIn(department(), 'AST-KMI-0009');
 
     $asset = app(AssetService::class)->create(assetPayload(), null);
 
-    expect($asset->asset_number)->toBe('AST000010');
+    expect($asset->asset_number)->toBe('AST-KMI-0010');
+});
+
+it('grows past four digits rather than repeating a number', function () {
+    assetIn(department(), 'AST-KMI-9999');
+
+    $asset = app(AssetService::class)->create(assetPayload(), null);
+
+    expect($asset->asset_number)->toBe('AST-KMI-10000');
+});
+
+it('continues the sequence from a number in the pre-2026-07 format', function () {
+    assetIn(department(), 'AST000007');
+
+    $asset = app(AssetService::class)->create(assetPayload(), null);
+
+    expect($asset->asset_number)->toBe('AST-KMI-0008');
+});
+
+it('reads the sequence out of either format', function () {
+    expect(AssetService::sequenceOf('AST-KMI-0001'))->toBe(1);
+    expect(AssetService::sequenceOf('AST-KMI-10000'))->toBe(10000);
+    expect(AssetService::sequenceOf('AST000042'))->toBe(42);
 });
 
 it('generates a QR code file for a new asset', function () {
     $asset = app(AssetService::class)->create(assetPayload(), null);
 
-    expect($asset->qr_path)->toBe('qrcodes/AST000001.png');
+    expect($asset->qr_path)->toBe('qrcodes/AST-KMI-0001.png');
     Storage::disk('public')->assertExists($asset->qr_path);
 });
 
@@ -114,7 +136,7 @@ it('never renumbers an asset on update', function () {
     $asset = $service->create(assetPayload(), null);
     $service->update($asset, assetPayload(['name' => 'Nama Baru']), null);
 
-    expect($asset->fresh()->asset_number)->toBe('AST000001');
+    expect($asset->fresh()->asset_number)->toBe('AST-KMI-0001');
 });
 
 it('removes the photo and the QR file when an asset is deleted', function () {

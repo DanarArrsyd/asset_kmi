@@ -36,8 +36,8 @@ it('shows a scoped role only its own department history', function () {
 
     $auditor = userOfRole(UserRole::Auditor);
 
-    $mineAsset = assetIn($mine, 'AST000001');
-    $theirsAsset = assetIn($theirs, 'AST000002');
+    $mineAsset = assetIn($mine, 'AST-KMI-0001');
+    $theirsAsset = assetIn($theirs, 'AST-KMI-0002');
 
     foreach ([$mineAsset, $theirsAsset] as $asset) {
         $this->actingAs($auditor)->post("/assets/{$asset->asset_number}/stock-opname", [
@@ -49,12 +49,12 @@ it('shows a scoped role only its own department history', function () {
     $response = $this->actingAs(userOfRole(UserRole::Department, $mine))->get('/stock-opname');
 
     $response->assertOk();
-    $response->assertSee('AST000001');
-    $response->assertDontSee('AST000002');
+    $response->assertSee('AST-KMI-0001');
+    $response->assertDontSee('AST-KMI-0002');
 });
 
 it('refuses a scoped role the stock take of another department', function () {
-    $theirs = assetIn(department('Finance', 'FIN'), 'AST000002');
+    $theirs = assetIn(department('Finance', 'FIN'), 'AST-KMI-0002');
     $outsider = userOfRole(UserRole::Department, department('Produksi', 'PRD'));
 
     $this->actingAs($outsider)
