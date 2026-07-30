@@ -127,7 +127,7 @@
                         @if ($asset->specification)
                             <div class="detail-field detail-field--full">
                                 <div class="detail-field__label">Spesifikasi</div>
-                                <div class="detail-field__value">{{ $asset->specification }}</div>
+                                <x-spec-list :text="$asset->specification" />
                             </div>
                         @endif
                     </div>

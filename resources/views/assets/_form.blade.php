@@ -49,8 +49,13 @@
 
                 <div class="form-group form-field--full">
                     <x-input-label for="specification" value="Spesifikasi" />
-                    <textarea id="specification" name="specification" rows="3"
+                    <textarea id="specification" name="specification" rows="6" aria-describedby="specificationHint"
+                              placeholder="Processor : Intel Core i3-1215U&#10;Memory : 8 GB DDR4-3200&#10;Hard Drive : 512 GB SSD PCIe"
                               @class(['form-control', 'is-invalid' => $errors->has('specification')])>{{ old('specification', $asset->specification ?? '') }}</textarea>
+                    <p class="form-hint" id="specificationHint">
+                        Satu baris per item, format <strong>Label : nilai</strong>. Halaman detail
+                        menampilkannya berkolom mengikuti baris yang Anda tulis.
+                    </p>
                     <x-input-error :messages="$errors->get('specification')" />
                 </div>
 

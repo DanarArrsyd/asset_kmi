@@ -1232,6 +1232,34 @@ a.card:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2p
   overflow-wrap: anywhere;
 }
 
+/* Specification — one row per line, as typed.
+ *
+ * A spec sheet is read by scanning down the labels, so the terms sit in their
+ * own column and every value starts at the same left edge. Rendered as a real
+ * <dl>: each row is a term and its description, which is what this is. */
+.spec-list {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+  gap: var(--space-2xs) var(--space-md);
+  margin: var(--space-xs) 0 0;
+  font-size: var(--text-sm);
+}
+.spec-list__term {
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+.spec-list__value {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+/* A line with no "Label : value" shape — free text, so it takes the full width
+ * rather than being forced into the term column. */
+.spec-list__note {
+  grid-column: 1 / -1;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .qr-box { text-align: center; }
 .qr-box img {
   width: 160px; height: 160px;
@@ -1379,6 +1407,12 @@ dialog.confirm-dialog > form > p { font-size: var(--text-sm); color: var(--color
     align-content: start;
     padding: var(--space-2xl) var(--space-lg);
   }
+
+  /* Two columns cannot hold "Operating System" beside its value on a phone, so
+   * the term becomes a heading over it. */
+  .spec-list { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .spec-list__term { margin-top: var(--space-xs); }
+  .spec-list__term:first-child { margin-top: 0; }
 }
 
 @media (max-width: 768px) {
