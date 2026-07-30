@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
     Route::get('/assets/export', [AssetController::class, 'export'])->name('assets.export');
     Route::get('/assets/create', [AssetController::class, 'create'])->name('assets.create');
+    Route::get('/assets/{asset}/duplicate', [AssetController::class, 'duplicate'])->name('assets.duplicate');
     Route::post('/assets', [AssetController::class, 'store'])->name('assets.store');
     Route::get('/assets/{asset}/edit', [AssetController::class, 'edit'])->name('assets.edit');
     Route::get('/assets/{asset}/qr-print', [AssetController::class, 'qrPrint'])->name('assets.qr-print');

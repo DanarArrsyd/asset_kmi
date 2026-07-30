@@ -109,7 +109,50 @@ class AssetController extends Controller
     {
         $this->authorize('create', Asset::class);
 
-        return view('assets.create', $this->formOptions());
+        return view('assets.create', $this->formOptions() + [
+            'duplicatedFrom' => session('duplicated-from'),
+        ]);
+    }
+
+    /**
+     * Prefill the create form from an existing asset.
+     *
+     * Identical hardware arrives in batches — two of the same switch, ten of the
+     * same laptop — and retyping the whole specification for each is where wrong
+     * data comes from.
+     *
+     * This deliberately does not write a row. Matching hardware rarely matches
+     * completely: condition, PIC and the exact rack usually differ, so the form
+     * opens filled in and waits. It also means a double-click cannot create two
+     * assets nobody asked for.
+     *
+     * Flashing the source values as old input means the form picks them up
+     * through its existing old() calls, with no second code path to keep in step.
+     */
+    public function duplicate(Asset $asset): RedirectResponse
+    {
+        $this->authorize('create', Asset::class);
+        $this->authorize('view', $asset);
+
+        // Scalars, not casts: a date input needs Y-m-d and @selected compares
+        // against the enum's backing value, so a Carbon or an enum instance here
+        // would silently leave those two fields blank.
+        return redirect()
+            ->route('assets.create')
+            ->with('duplicated-from', $asset->asset_number)
+            ->withInput([
+                'name' => $asset->name,
+                'category_id' => $asset->category_id,
+                'brand_id' => $asset->brand_id,
+                'model' => $asset->model,
+                'specification' => $asset->specification,
+                'department_id' => $asset->department_id,
+                'location_id' => $asset->location_id,
+                'pic' => $asset->pic,
+                'purchase_date' => $asset->purchase_date?->format('Y-m-d'),
+                'status' => $asset->status->value,
+                'condition' => $asset->condition->value,
+            ]);
     }
 
     public function store(StoreAssetRequest $request): RedirectResponse

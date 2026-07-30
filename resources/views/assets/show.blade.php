@@ -23,6 +23,11 @@
                 <i class="bi bi-pencil" aria-hidden="true"></i> Edit
             </a>
         @endcan
+        @can('create', App\Models\Asset::class)
+            <a href="{{ route('assets.duplicate', $asset) }}" class="btn btn--secondary">
+                <i class="bi bi-copy" aria-hidden="true"></i> Duplikat
+            </a>
+        @endcan
         @can('delete', $asset)
             <button type="button" class="btn btn--danger" id="deleteAssetTrigger">
                 <i class="bi bi-trash" aria-hidden="true"></i> Hapus
