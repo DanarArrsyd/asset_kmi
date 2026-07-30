@@ -76,7 +76,7 @@ it('exports users as csv', function () {
     $response->assertOk();
 
     expect($response->streamedContent())
-        ->toContain('Nama,Email,Role,Department,Dibuat')
+        ->toContain('Nama,Email,Role,Departemen,Dibuat')
         ->and($response->streamedContent())->toContain($this->admin->email);
 });
 

@@ -40,7 +40,7 @@ class StockOpnameController extends Controller
 
         return response()->streamDownload(function () use ($stockOpnames) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Tanggal', 'No. Asset', 'Nama Asset', 'Diperiksa Oleh', 'Condition', 'Status', 'Catatan']);
+            fputcsv($handle, ['Tanggal', 'No. Asset', 'Nama Asset', 'Diperiksa Oleh', 'Kondisi', 'Status', 'Catatan']);
 
             foreach ($stockOpnames as $sto) {
                 fputcsv($handle, [

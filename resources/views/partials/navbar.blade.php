@@ -42,13 +42,13 @@
 
             <div class="navbar__dropdown">
                 <a href="{{ route('profile.edit') }}" class="navbar__dropdown-item">
-                    <i class="bi bi-person-circle" aria-hidden="true"></i> Profile
+                    <i class="bi bi-person-circle" aria-hidden="true"></i> Profil
                 </a>
                 <div class="navbar__dropdown-divider"></div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="navbar__dropdown-item is-danger">
-                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Log Out
+                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Keluar
                     </button>
                 </form>
             </div>

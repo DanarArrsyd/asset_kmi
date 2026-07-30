@@ -20,13 +20,13 @@
     <div class="stack">
         <section class="kpi-grid" aria-label="Ringkasan aset">
             <div class="card">
-                <div class="kpi-card__label"><i class="bi bi-boxes" aria-hidden="true"></i> Total Assets</div>
+                <div class="kpi-card__label"><i class="bi bi-boxes" aria-hidden="true"></i> Total Aset</div>
                 <div class="kpi-card__value">{{ number_format($totalAssets ?? 0) }}</div>
                 <div class="kpi-card__delta">Seluruh departemen</div>
             </div>
 
             <div class="card kpi-card--accent">
-                <div class="kpi-card__label"><i class="bi bi-check-circle" aria-hidden="true"></i> Active</div>
+                <div class="kpi-card__label"><i class="bi bi-check-circle" aria-hidden="true"></i> Aktif</div>
                 <div class="kpi-card__value">{{ number_format($activeAssets ?? 0) }}</div>
                 <div class="kpi-card__delta is-up">
                     <i class="bi bi-arrow-up-short" aria-hidden="true"></i> {{ $activePercent ?? 0 }}% dari total
@@ -40,7 +40,7 @@
             </div>
 
             <div class="card kpi-card--danger">
-                <div class="kpi-card__label"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Missing</div>
+                <div class="kpi-card__label"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Hilang</div>
                 <div class="kpi-card__value">{{ number_format($missingAssets ?? 0) }}</div>
                 <div class="kpi-card__delta is-down">
                     <i class="bi bi-arrow-down-short" aria-hidden="true"></i> perlu tindak lanjut
@@ -48,7 +48,7 @@
             </div>
 
             <div class="card">
-                <div class="kpi-card__label"><i class="bi bi-clipboard-check" aria-hidden="true"></i> STO Progress</div>
+                <div class="kpi-card__label"><i class="bi bi-clipboard-check" aria-hidden="true"></i> Progres STO</div>
                 <div class="kpi-card__value">{{ $stoProgress ?? 0 }}%</div>
                 <div class="dist-bar" role="progressbar"
                      aria-valuenow="{{ $stoProgress ?? 0 }}" aria-valuemin="0" aria-valuemax="100"
@@ -62,7 +62,7 @@
             <div class="stack">
                 <div class="panel">
                     <div class="panel__head">
-                        <div class="panel__head-text"><h2>Assets by Department</h2></div>
+                        <div class="panel__head-text"><h2>Aset per Departemen</h2></div>
                         <a href="{{ route('assets.index') }}" class="panel__head-link">Lihat semua</a>
                     </div>
                     <div class="panel__body">
@@ -84,7 +84,7 @@
 
                 <div class="panel">
                     <div class="panel__head">
-                        <div class="panel__head-text"><h2>Assets by Category</h2></div>
+                        <div class="panel__head-text"><h2>Aset per Kategori</h2></div>
                         <a href="{{ route('assets.index') }}" class="panel__head-link">Lihat semua</a>
                     </div>
                     <div class="panel__body">
@@ -107,7 +107,7 @@
 
             <div class="panel">
                 <div class="panel__head">
-                    <div class="panel__head-text"><h2>Recent Activities</h2></div>
+                    <div class="panel__head-text"><h2>Aktivitas Terakhir</h2></div>
                     <a href="{{ route('stock-opname.index') }}" class="panel__head-link">Lihat semua</a>
                 </div>
                 <div class="panel__body">

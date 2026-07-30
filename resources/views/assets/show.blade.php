@@ -15,7 +15,7 @@
     <x-page-header :title="$asset->name" :lede="$asset->asset_number">
         @can('recordStockOpname', $asset)
             <a href="{{ route('stock-opname.create', $asset) }}" class="btn btn--primary">
-                <i class="bi bi-qr-code-scan" aria-hidden="true"></i> Start STO
+                <i class="bi bi-qr-code-scan" aria-hidden="true"></i> Mulai STO
             </a>
         @endcan
         @can('update', $asset)
@@ -66,12 +66,12 @@
                             <div class="row-actions">
                                 <a href="{{ route('assets.qr-print', $asset) }}" target="_blank" rel="noopener"
                                    class="btn btn--secondary btn--sm">
-                                    <i class="bi bi-printer" aria-hidden="true"></i> Print
+                                    <i class="bi bi-printer" aria-hidden="true"></i> Cetak
                                 </a>
                                 @if ($asset->qr_path)
                                     <a href="{{ Storage::url($asset->qr_path) }}" download="{{ $asset->asset_number }}.png"
                                        class="btn btn--secondary btn--sm">
-                                        <i class="bi bi-download" aria-hidden="true"></i> Download
+                                        <i class="bi bi-download" aria-hidden="true"></i> Unduh
                                     </a>
                                 @endif
                             </div>
@@ -88,7 +88,7 @@
                 <div class="panel__body">
                     <div class="detail-fields">
                         <div class="detail-field">
-                            <div class="detail-field__label">Category</div>
+                            <div class="detail-field__label">Kategori</div>
                             <div class="detail-field__value">{{ $asset->category->name }}</div>
                         </div>
                         <div class="detail-field">
@@ -100,11 +100,11 @@
                             <div class="detail-field__value">{{ $asset->model ?? '—' }}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field__label">Department</div>
+                            <div class="detail-field__label">Departemen</div>
                             <div class="detail-field__value">{{ $asset->department->name }}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field__label">Location</div>
+                            <div class="detail-field__label">Lokasi</div>
                             <div class="detail-field__value">{{ $asset->location->name }}</div>
                         </div>
                         <div class="detail-field">
@@ -112,21 +112,21 @@
                             <div class="detail-field__value">{{ $asset->pic ?? '—' }}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field__label">Condition</div>
+                            <div class="detail-field__label">Kondisi</div>
                             <div class="detail-field__value">{{ $asset->condition->label() }}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field__label">Purchase Date</div>
+                            <div class="detail-field__label">Tanggal Pembelian</div>
                             <div class="detail-field__value">{{ $asset->purchase_date?->format('d M Y') ?? '—' }}</div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field__label">Created</div>
+                            <div class="detail-field__label">Dibuat</div>
                             <div class="detail-field__value">{{ $asset->created_at->format('d M Y H:i') }}</div>
                         </div>
 
                         @if ($asset->specification)
                             <div class="detail-field detail-field--full">
-                                <div class="detail-field__label">Specification</div>
+                                <div class="detail-field__label">Spesifikasi</div>
                                 <div class="detail-field__value">{{ $asset->specification }}</div>
                             </div>
                         @endif
@@ -137,7 +137,7 @@
 
         <div class="panel">
             <div class="panel__head">
-                <div class="panel__head-text"><h2>History Stock Opname</h2></div>
+                <div class="panel__head-text"><h2>Riwayat Stock Opname</h2></div>
                 <span class="pill pill--neutral">{{ $asset->stockOpnames->count() }} entri</span>
             </div>
             <div class="panel__body">

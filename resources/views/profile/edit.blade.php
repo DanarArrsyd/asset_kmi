@@ -2,14 +2,14 @@
 
 @php($activeMenu = 'profile')
 
-@section('title', 'Profile')
+@section('title', 'Profil')
 
 @section('breadcrumb')
-    <x-breadcrumb :items="[['label' => 'Profile']]" />
+    <x-breadcrumb :items="[['label' => 'Profil']]" />
 @endsection
 
 @section('content')
-    <x-page-header title="Profile" lede="Kelola informasi akun & keamanan." />
+    <x-page-header title="Profil" lede="Kelola informasi akun & keamanan." />
 
     @if (session('error'))
         <div class="form-status form-status--error">{{ session('error') }}</div>
@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="detail-field">
-                            <div class="detail-field__label">Department</div>
+                            <div class="detail-field__label">Departemen</div>
                             <div class="detail-field__value">{{ $user->department?->name ?? '—' }}</div>
                         </div>
                         <div class="detail-field">

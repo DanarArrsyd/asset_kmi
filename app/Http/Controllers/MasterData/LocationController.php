@@ -11,7 +11,7 @@ class LocationController extends MasterDataController
 
     protected string $routeBase = 'locations';
 
-    protected string $pageTitle = 'Location';
+    protected string $pageTitle = 'Lokasi';
 
     protected string $activeMenu = 'location';
 

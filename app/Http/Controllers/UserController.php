@@ -38,7 +38,7 @@ class UserController extends Controller
 
         return response()->streamDownload(function () use ($users) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Nama', 'Email', 'Role', 'Department', 'Dibuat']);
+            fputcsv($handle, ['Nama', 'Email', 'Role', 'Departemen', 'Dibuat']);
 
             foreach ($users as $user) {
                 fputcsv($handle, [

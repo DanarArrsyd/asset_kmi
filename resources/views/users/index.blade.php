@@ -2,25 +2,25 @@
 
 @php($activeMenu = 'users')
 
-@section('title', 'Users')
+@section('title', 'Pengguna')
 
 @section('breadcrumb')
-    <x-breadcrumb :items="[['label' => 'Users']]" />
+    <x-breadcrumb :items="[['label' => 'Pengguna']]" />
 @endsection
 
 @section('content')
-    <x-page-header title="Users" lede="Kelola akun & role akses.">
+    <x-page-header title="Pengguna" lede="Kelola akun & role akses.">
         <a href="{{ route('users.create') }}" class="btn btn--primary">
             <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah User
         </a>
     </x-page-header>
 
     @if (session('status') === 'created')
-        <div class="form-status form-status--success">User berhasil ditambahkan.</div>
+        <div class="form-status form-status--success">Pengguna berhasil ditambahkan.</div>
     @elseif (session('status') === 'updated')
-        <div class="form-status form-status--success">User berhasil diperbarui.</div>
+        <div class="form-status form-status--success">Pengguna berhasil diperbarui.</div>
     @elseif (session('status') === 'deleted')
-        <div class="form-status form-status--success">User berhasil dihapus.</div>
+        <div class="form-status form-status--success">Pengguna berhasil dihapus.</div>
     @elseif (session('error'))
         <div class="form-status form-status--error">{{ session('error') }}</div>
     @endif
@@ -41,13 +41,13 @@
         <div class="panel__body panel__body--flush">
             <div class="table-scroll">
                 <table class="table">
-                    <caption class="sr-only">Daftar user</caption>
+                    <caption class="sr-only">Daftar pengguna</caption>
                     <thead>
                         <tr>
                             <x-th-sort field="name" label="Nama" />
                             <x-th-sort field="email" label="Email" />
                             <x-th-sort field="role" label="Role" />
-                            <th>Department</th>
+                            <th>Departemen</th>
                             <x-th-sort field="created_at" label="Dibuat" />
                             <th><span class="sr-only">Aksi</span></th>
                         </tr>
@@ -78,7 +78,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="table-empty">Belum ada user.</td>
+                                <td colspan="6" class="table-empty">Belum ada pengguna.</td>
                             </tr>
                         @endforelse
                     </tbody>
