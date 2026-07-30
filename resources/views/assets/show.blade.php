@@ -146,7 +146,7 @@
                         <div class="activity-icon is-success"><i class="bi bi-qr-code-scan" aria-hidden="true"></i></div>
                         <div class="activity-body">
                             <p>
-                                <strong>{{ $sto->user->name }}</strong> memeriksa — condition
+                                <strong>{{ $sto->auditorName() }}</strong> memeriksa — condition
                                 <strong>{{ $sto->condition->label() }}</strong>, status
                                 <strong>{{ $sto->status->label() }}</strong>@if ($sto->notes) — {{ $sto->notes }}@endif
                             </p>

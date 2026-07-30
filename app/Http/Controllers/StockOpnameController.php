@@ -47,7 +47,7 @@ class StockOpnameController extends Controller
                     $sto->checked_at->format('Y-m-d H:i'),
                     $sto->asset->asset_number,
                     $sto->asset->name,
-                    $sto->user->name,
+                    $sto->auditorName(),
                     $sto->condition->label(),
                     $sto->status->label(),
                     $sto->notes ?? '',

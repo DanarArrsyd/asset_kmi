@@ -46,7 +46,7 @@
                                     <a href="{{ route('asset.public', $sto->asset) }}">{{ $sto->asset->asset_number }}</a>
                                     — {{ $sto->asset->name }}
                                 </td>
-                                <td class="cell-muted">{{ $sto->user->name }}</td>
+                                <td class="cell-muted">{{ $sto->auditorName() }}</td>
                                 <td>{{ $sto->condition->label() }}</td>
                                 <td><span class="pill {{ $sto->status->badgeClass() }}">{{ $sto->status->label() }}</span></td>
                                 <td class="cell-muted">{{ $sto->notes ?? '—' }}</td>
