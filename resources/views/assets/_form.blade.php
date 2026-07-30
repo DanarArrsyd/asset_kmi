@@ -48,16 +48,16 @@
                 </div>
 
                 <div class="form-group form-field--full">
-                    <x-input-label for="specification" value="Specification" />
+                    <x-input-label for="specification" value="Spesifikasi" />
                     <textarea id="specification" name="specification" rows="3"
                               @class(['form-control', 'is-invalid' => $errors->has('specification')])>{{ old('specification', $asset->specification ?? '') }}</textarea>
                     <x-input-error :messages="$errors->get('specification')" />
                 </div>
 
                 <div class="form-group">
-                    <x-input-label for="department_id" value="Department" :required="true" />
+                    <x-input-label for="department_id" value="Departemen" :required="true" />
                     <select id="department_id" name="department_id" @class(['form-control', 'is-invalid' => $errors->has('department_id')]) required>
-                        <option value="">Pilih department</option>
+                        <option value="">Pilih departemen</option>
                         @foreach ($departments as $department)
                             <option value="{{ $department->id }}" @selected(old('department_id', $asset->department_id ?? '') == $department->id)>{{ $department->name }}</option>
                         @endforeach
@@ -66,9 +66,9 @@
                 </div>
 
                 <div class="form-group">
-                    <x-input-label for="location_id" value="Location" :required="true" />
+                    <x-input-label for="location_id" value="Lokasi" :required="true" />
                     <select id="location_id" name="location_id" @class(['form-control', 'is-invalid' => $errors->has('location_id')]) required>
-                        <option value="">Pilih location</option>
+                        <option value="">Pilih lokasi</option>
                         @foreach ($locations as $location)
                             <option value="{{ $location->id }}" @selected(old('location_id', $asset->location_id ?? '') == $location->id)>{{ $location->name }}</option>
                         @endforeach
@@ -84,7 +84,7 @@
                 </div>
 
                 <div class="form-group">
-                    <x-input-label for="purchase_date" value="Purchase Date" />
+                    <x-input-label for="purchase_date" value="Tanggal Pembelian" />
                     <x-text-input id="purchase_date" name="purchase_date" type="date"
                                   :value="old('purchase_date', isset($asset) ? $asset->purchase_date?->format('Y-m-d') : '')"
                                   class="{{ $errors->has('purchase_date') ? 'is-invalid' : '' }}" />
@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="form-group">
-                    <x-input-label for="condition" value="Condition" :required="true" />
+                    <x-input-label for="condition" value="Kondisi" :required="true" />
                     <select id="condition" name="condition" @class(['form-control', 'is-invalid' => $errors->has('condition')]) required>
                         @foreach ($conditions as $condition)
                             <option value="{{ $condition->value }}" @selected(old('condition', $asset->condition->value ?? 'good') === $condition->value)>{{ $condition->label() }}</option>

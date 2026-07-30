@@ -14,9 +14,9 @@
     <x-table-toolbar :action="route('stock-opname.index')"
                      placeholder="Cari nomor / nama asset..."
                      :export-url="route('stock-opname.export', request()->query())">
-        <label class="sr-only" for="filterCondition">Condition</label>
+        <label class="sr-only" for="filterCondition">Kondisi</label>
         <select id="filterCondition" name="condition" class="form-control">
-            <option value="">Semua Condition</option>
+            <option value="">Semua Kondisi</option>
             @foreach ($conditions as $condition)
                 <option value="{{ $condition->value }}" @selected(request('condition') === $condition->value)>{{ $condition->label() }}</option>
             @endforeach
@@ -33,7 +33,7 @@
                             <x-th-sort field="checked_at" label="Tanggal" />
                             <th>Asset</th>
                             <th>Diperiksa Oleh</th>
-                            <x-th-sort field="condition" label="Condition" />
+                            <x-th-sort field="condition" label="Kondisi" />
                             <x-th-sort field="status" label="Status" />
                             <th>Catatan</th>
                         </tr>

@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="form-group">
-                    <x-input-label for="password_confirmation" value="Confirm Password" :required="! isset($targetUser)" />
+                    <x-input-label for="password_confirmation" value="Konfirmasi Password" :required="! isset($targetUser)" />
                     <x-text-input id="password_confirmation" name="password_confirmation" type="password"
                                   :required="! isset($targetUser)" autocomplete="new-password" />
                 </div>
@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="form-group">
-                    <x-input-label for="department_id" value="Department" />
+                    <x-input-label for="department_id" value="Departemen" />
                     <select id="department_id" name="department_id" aria-describedby="departmentHint"
                             @class(['form-control', 'is-invalid' => $errors->has('department_id')])>
                         <option value="">— Tidak ada —</option>
@@ -59,14 +59,14 @@
                             <option value="{{ $department->id }}" @selected(old('department_id', $targetUser->department_id ?? '') == $department->id)>{{ $department->name }}</option>
                         @endforeach
                     </select>
-                    <p class="form-hint" id="departmentHint">Wajib diisi untuk role Department/User.</p>
+                    <p class="form-hint" id="departmentHint">Wajib diisi untuk role Department dan User.</p>
                     <x-input-error :messages="$errors->get('department_id')" />
                 </div>
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn--primary">
-                    {{ isset($targetUser) ? 'Simpan Perubahan' : 'Simpan User' }}
+                    {{ isset($targetUser) ? 'Simpan Perubahan' : 'Simpan Pengguna' }}
                 </button>
                 <a href="{{ route('users.index') }}" class="btn btn--secondary">Batal</a>
             </div>

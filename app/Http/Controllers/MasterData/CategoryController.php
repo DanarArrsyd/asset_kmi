@@ -11,7 +11,7 @@ class CategoryController extends MasterDataController
 
     protected string $routeBase = 'categories';
 
-    protected string $pageTitle = 'Category';
+    protected string $pageTitle = 'Kategori';
 
     protected string $activeMenu = 'category';
 

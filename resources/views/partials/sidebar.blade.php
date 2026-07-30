@@ -13,9 +13,9 @@
             'label' => 'Master Data',
             'items' => array_values(array_filter([
                 ['key' => 'asset', 'label' => 'Asset', 'icon' => 'bi-box', 'href' => route('assets.index')],
-                $canManageMasterData ? ['key' => 'category', 'label' => 'Category', 'icon' => 'bi-tags', 'href' => route('categories.index')] : null,
-                $canManageMasterData ? ['key' => 'department', 'label' => 'Department', 'icon' => 'bi-diagram-3', 'href' => route('departments.index')] : null,
-                $canManageMasterData ? ['key' => 'location', 'label' => 'Location', 'icon' => 'bi-geo-alt', 'href' => route('locations.index')] : null,
+                $canManageMasterData ? ['key' => 'category', 'label' => 'Kategori', 'icon' => 'bi-tags', 'href' => route('categories.index')] : null,
+                $canManageMasterData ? ['key' => 'department', 'label' => 'Departemen', 'icon' => 'bi-diagram-3', 'href' => route('departments.index')] : null,
+                $canManageMasterData ? ['key' => 'location', 'label' => 'Lokasi', 'icon' => 'bi-geo-alt', 'href' => route('locations.index')] : null,
                 $canManageMasterData ? ['key' => 'brand', 'label' => 'Brand', 'icon' => 'bi-bookmark', 'href' => route('brands.index')] : null,
             ])),
         ],
@@ -30,15 +30,15 @@
         [
             'label' => 'Laporan',
             'items' => [
-                ['key' => 'reports', 'label' => 'Reports', 'icon' => 'bi-bar-chart', 'pending' => true],
+                ['key' => 'reports', 'label' => 'Laporan Aset', 'icon' => 'bi-bar-chart', 'pending' => true],
             ],
         ],
     ];
 
     $footItems = array_values(array_filter([
-        $canManageUsers ? ['key' => 'users', 'label' => 'Users', 'icon' => 'bi-people', 'href' => route('users.index')] : null,
-        ['key' => 'settings', 'label' => 'Settings', 'icon' => 'bi-gear', 'pending' => true],
-        ['key' => 'profile', 'label' => 'Profile', 'icon' => 'bi-person-circle', 'href' => route('profile.edit')],
+        $canManageUsers ? ['key' => 'users', 'label' => 'Pengguna', 'icon' => 'bi-people', 'href' => route('users.index')] : null,
+        ['key' => 'settings', 'label' => 'Pengaturan', 'icon' => 'bi-gear', 'pending' => true],
+        ['key' => 'profile', 'label' => 'Profil', 'icon' => 'bi-person-circle', 'href' => route('profile.edit')],
     ]));
 
     $current = $activeMenu ?? null;

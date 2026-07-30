@@ -46,7 +46,7 @@ class AssetController extends Controller
 
         return response()->streamDownload(function () use ($assets) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Asset Number', 'Name', 'Category', 'Department', 'Location', 'Status', 'Condition', 'Purchase Date']);
+            fputcsv($handle, ['No. Asset', 'Nama', 'Kategori', 'Departemen', 'Lokasi', 'Status', 'Kondisi', 'Tanggal Pembelian']);
 
             foreach ($assets as $asset) {
                 fputcsv($handle, [

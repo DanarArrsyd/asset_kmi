@@ -11,9 +11,9 @@ enum AssetCondition: string
     public function label(): string
     {
         return match ($this) {
-            self::Good => 'Good',
-            self::Fair => 'Fair',
-            self::Damaged => 'Damaged',
+            self::Good => 'Baik',
+            self::Fair => 'Cukup',
+            self::Damaged => 'Rusak',
         };
     }
 }

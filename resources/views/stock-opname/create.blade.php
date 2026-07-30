@@ -31,15 +31,15 @@
                         <div class="detail-field__value">{{ $asset->name }}</div>
                     </div>
                     <div class="detail-field">
-                        <div class="detail-field__label">Category</div>
+                        <div class="detail-field__label">Kategori</div>
                         <div class="detail-field__value">{{ $asset->category->name }}</div>
                     </div>
                     <div class="detail-field">
-                        <div class="detail-field__label">Department</div>
+                        <div class="detail-field__label">Departemen</div>
                         <div class="detail-field__value">{{ $asset->department->name }}</div>
                     </div>
                     <div class="detail-field">
-                        <div class="detail-field__label">Location</div>
+                        <div class="detail-field__label">Lokasi</div>
                         <div class="detail-field__value">{{ $asset->location->name }}</div>
                     </div>
                     <div class="detail-field">
@@ -60,7 +60,7 @@
 
                     <div class="form-grid">
                         <div class="form-group">
-                            <x-input-label for="condition" value="Condition" :required="true" />
+                            <x-input-label for="condition" value="Kondisi" :required="true" />
                             <select id="condition" name="condition" @class(['form-control', 'is-invalid' => $errors->has('condition')]) required>
                                 @foreach (\App\Enums\AssetCondition::cases() as $condition)
                                     <option value="{{ $condition->value }}" @selected(old('condition', $asset->condition->value) === $condition->value)>{{ $condition->label() }}</option>
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="form-group form-field--full">
-                            <x-input-label for="photo" value="Foto (Optional)" />
+                            <x-input-label for="photo" value="Foto (Opsional)" />
                             <input id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp" class="form-file">
                             <x-input-error :messages="$errors->get('photo')" />
                         </div>
@@ -95,7 +95,7 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn--primary">
-                            <i class="bi bi-check-lg" aria-hidden="true"></i> Save STO
+                            <i class="bi bi-check-lg" aria-hidden="true"></i> Simpan STO
                         </button>
                         <a href="{{ route('asset.public', $asset) }}" class="btn btn--secondary">Batal</a>
                     </div>

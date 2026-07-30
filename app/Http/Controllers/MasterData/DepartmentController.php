@@ -11,7 +11,7 @@ class DepartmentController extends MasterDataController
 
     protected string $routeBase = 'departments';
 
-    protected string $pageTitle = 'Department';
+    protected string $pageTitle = 'Departemen';
 
     protected string $activeMenu = 'department';
 

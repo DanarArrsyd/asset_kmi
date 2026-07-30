@@ -12,10 +12,10 @@ enum AssetStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Active => 'Active',
+            self::Active => 'Aktif',
             self::Maintenance => 'Maintenance',
-            self::Missing => 'Missing',
-            self::Disposed => 'Disposed',
+            self::Missing => 'Hilang',
+            self::Disposed => 'Dilepas',
         };
     }
 
