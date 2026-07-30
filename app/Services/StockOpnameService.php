@@ -18,6 +18,7 @@ class StockOpnameService
             $sto = StockOpname::create([
                 'asset_id' => $asset->id,
                 'user_id' => $user->id,
+                'checked_by_name' => $user->name,
                 'condition' => $data['condition'],
                 'status' => $data['status'],
                 'notes' => $data['notes'] ?? null,

@@ -66,7 +66,7 @@ class DashboardController extends Controller
                 default => '',
             },
             'assetNumber' => $sto->asset->asset_number,
-            'message' => "diverifikasi STO oleh {$sto->user->name} — {$sto->condition->label()}",
+            'message' => "diverifikasi STO oleh {$sto->auditorName()} — {$sto->condition->label()}",
             'time' => $sto->checked_at->diffForHumans(),
         ]);
 
